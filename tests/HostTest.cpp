@@ -7,7 +7,7 @@
 #include "ChlAudio.h"
 
 using namespace juce;
-extern int chloaelisDbgRenders, chloaelisDbgBlurs;
+extern int chloaelisDbgRenders;
 extern int chloaelisDbgFrames;
 
 // portable environment helpers (the tests flip a flag that the processor reads)
@@ -273,7 +273,6 @@ int main (int argc, char** argv)
             while (Time::getMillisecondCounterHiRes() - t0 < 5000.0)
             {
                 const double el = (Time::getMillisecondCounterHiRes() - t0) * 0.001;
-                ed->holdFocusForTest (sweep ? 410.0f + 380.0f * (float) std::sin (el * 2.0) : -1.0f);
                 // the cursor wanders across the whole window, so the camera keeps swinging
                 ed->holdMouseForTest (sweep ? 600.0f + 560.0f * (float) std::sin (el * 1.3) : 160.0f, sweep ? 410.0f + 380.0f * (float) std::sin (el * 2.0) : 400.0f);
                 for (int i = 0; i < 512; ++i) for (int c = 0; c < 2; ++c) buf.setSample (c, i, std::sin ((blk * 512 + i) * 0.02f) * 0.4f);
@@ -403,6 +402,7 @@ int main (int argc, char** argv)
         p.apvts.getParameter (chl::flockId)->setValueNotifyingHost (0.8f);
         AudioBuffer<float> buf (2, 512); MidiBuffer m;
         for (int b = 0; b < 60; ++b) { for (int i = 0; i < 512; ++i) for (int c = 0; c < 2; ++c) buf.setSample (c, i, std::sin ((b * 512 + i) * 0.02f) * 0.4f); p.processBlock (buf, m); }
+        p.uiDark = 0;    // light mode for the main pictures (otherwise the editor follows the system), dark further down
         p.loadVesselFile (File::getSpecialLocation (File::userHomeDirectory).getChildFile ("chloe/chloaelis_demo_tape.wav"));
         p.vesselStart = 0.25f; p.vesselEnd = 0.7f; p.vesselLevel = 0.5f;
         std::unique_ptr<AudioProcessorEditor> ed (p.createEditorAndMakeActive());
@@ -412,20 +412,19 @@ int main (int argc, char** argv)
             if (auto* ce = dynamic_cast<ChloaelisEditor*> (ed.get())) ce->setDensityForTest ((float) std::atof (dn));
         for (int shot = 0; shot < 5; ++shot)
         {
-            // centred; focus low; cursor at the left; cursor at the right; silence (cool palette)
-            const float fy = shot == 1 ? 700.0f : -1.0f;
+            // centred; (as 0); cursor at the left; cursor at the right; silence (the plain palette)
             if (auto* ce = dynamic_cast<ChloaelisEditor*> (ed.get()))
             {
                 if (shot == 2)      ce->holdMouseForTest (170.0f, 330.0f);
                 else if (shot == 3) ce->holdMouseForTest (1040.0f, 520.0f);
                 else                ce->holdMouseForTest (-1.0f, -1.0f);
                 if (shot == 4)
-                    for (int b = 0; b < 40; ++b) { buf.clear(); p.processBlock (buf, m); ce->advanceFrames (4, fy); }
-                ce->advanceFrames (150, fy);
+                    for (int b = 0; b < 40; ++b) { buf.clear(); p.processBlock (buf, m); ce->advanceFrames (4); }
+                ce->advanceFrames (150);
             }
             // keep audio running so the attractor and levels move
             for (int b = 0; b < 30; ++b) { for (int i = 0; i < 512; ++i) for (int c = 0; c < 2; ++c) buf.setSample (c, i, shot == 4 ? 0.0f : std::sin ((b * 512 + i) * 0.02f) * 0.4f); p.processBlock (buf, m);
-                                           if (auto* ce = dynamic_cast<ChloaelisEditor*> (ed.get())) ce->advanceFrames (1, fy); }
+                                           if (auto* ce = dynamic_cast<ChloaelisEditor*> (ed.get())) ce->advanceFrames (1); }
             auto img = ed->createComponentSnapshot (ed->getLocalBounds(), true, 1.0f);
             static const char* suffix[] = { "", "_bottom", "_left", "_right", "_quiet" };
             auto f = shot == 0 ? out : out.getSiblingFile (out.getFileNameWithoutExtension() + suffix[shot] + ".png");
@@ -455,15 +454,25 @@ int main (int argc, char** argv)
         }
         if (auto* ce = dynamic_cast<ChloaelisEditor*> (ed.get()))
         {
-            // the Brick theme, with the left side on Karplus-Strong time
-            p.uiTheme = 1;
+            // dark mode, with the left side on Karplus-Strong time and the sound running (the palette warm)
+            p.uiDark = 1;
             p.apvts.getParameter (chl::ksId (0))->setValueNotifyingHost (1.0f);
             for (int b = 0; b < 30; ++b) { for (int i = 0; i < 512; ++i) for (int c = 0; c < 2; ++c) buf.setSample (c, i, std::sin ((b * 512 + i) * 0.02f) * 0.4f); p.processBlock (buf, m); ce->advanceFrames (2); }
             auto img = ed->createComponentSnapshot (ed->getLocalBounds(), true, 1.0f);
-            auto f = out.getSiblingFile (out.getFileNameWithoutExtension() + "_brick.png");
+            auto f = out.getSiblingFile (out.getFileNameWithoutExtension() + "_dark.png");
             f.deleteFile(); FileOutputStream os (f); PNGImageFormat().writeImageToStream (img, os);
             std::printf ("wrote %s\n", f.getFullPathName().toRawUTF8());
-            p.uiTheme = 0;
+            ce->showHelpForTest (true);
+            img = ed->createComponentSnapshot (ed->getLocalBounds(), true, 1.0f);
+            f = out.getSiblingFile (out.getFileNameWithoutExtension() + "_dark_help.png");
+            f.deleteFile(); FileOutputStream os3 (f); PNGImageFormat().writeImageToStream (img, os3);
+            ce->showHelpForTest (false);
+            // dark, silent: the plain dark look
+            for (int b = 0; b < 40; ++b) { buf.clear(); p.processBlock (buf, m); ce->advanceFrames (4); }
+            img = ed->createComponentSnapshot (ed->getLocalBounds(), true, 1.0f);
+            f = out.getSiblingFile (out.getFileNameWithoutExtension() + "_dark_quiet.png");
+            f.deleteFile(); FileOutputStream os4 (f); PNGImageFormat().writeImageToStream (img, os4);
+            p.uiDark = 0;
             p.apvts.getParameter (chl::ksId (0))->setValueNotifyingHost (0.0f);
             ce->advanceFrames (30);
             img = ed->createComponentSnapshot (ed->getLocalBounds(), true, 1.0f);

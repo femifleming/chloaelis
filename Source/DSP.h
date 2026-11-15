@@ -744,11 +744,28 @@ namespace chl::dsp
             dcLead = 1.5f / (twoPi * sr);       // the blocker's phase lead at a note of period P is dcLead * P * P samples
             reset();
         }
-        void reset() { std::fill (buf.begin(), buf.end(), 0.0f); w = 0; lp = 0; xf = 1; fading = false; dc.reset(); }
+        void reset() { std::fill (buf.begin(), buf.end(), 0.0f); w = 0; lp = 0; xf = 1; fading = false; dc.reset(); msq = 0; lim = 1; }
         void setPeriod (float sec, bool jump)
         {
             dTarget = juce::jlimit (5.0f, (float) size - 8.0f, sec * sr);
             if (jump) { dA = dB = dTarget; fading = false; xf = 1; }
+            // the governor's level window: four periods, never under 5 ms
+            msqA = juce::jmin (0.25f / dTarget, 1.0f / (0.005f * sr));
+        }
+
+        // The string's level governor. The loop's regeneration sits near 1, so a steady input would
+        // be amplified by 1/(1-g) (tens of dB), and a tanh in the loop then squares the string off
+        // into a buzz. Instead the loop stays linear and its regeneration is eased down as the
+        // string's level (RMS over a few periods, so the gain doesn't ripple at the pitch) reaches
+        // the ceiling: the string rings up to the ceiling and no further, and past 100% regen it
+        // sings there, clean. The tanh is left only as a safety net, well above the ceiling.
+        static constexpr float ceiling = 0.2f;       // RMS: a sine at -11 dBFS
+        float msq = 0.0f, msqA = 0.001f, lim = 1.0f;
+        inline float feedback (float f, float regen)
+        {
+            msq += (f * f - msq) * msqA;
+            lim = msq > ceiling * ceiling ? ceiling / std::sqrt (msq) : 1.0f;
+            return 4.0f * fastTanh (0.25f * f * regen * lim);
         }
         inline float readAt (float d) const
         {
@@ -890,7 +907,7 @@ namespace chl::dsp
                 ks.setPeriod (timeSec, false);
                 const float y = ks.process (x + fb, freeze, fadeMode, type);
                 const float f = hpf ? fbHP.process (y) : y;
-                fb = freeze ? 0.0f : fastTanh (f) * regen;
+                fb = freeze ? 0.0f : ks.feedback (f, regen);
                 return y;
             }
             if (type != activeType)

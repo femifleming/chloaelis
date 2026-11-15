@@ -347,6 +347,32 @@ int main (int argc, char** argv)
         check (full > 4.0 * floorPt && in0 < 0.2 * full && out0 > 0.5 * full && gone < 0.3 * full && jump < 0.25 * full, msg);
     }
 
+    // 13. Karplus-Strong with a steady signal going in: a string must not blow up. The loop's regeneration
+    //     is near 1, so a sustained input would be amplified by 1/(1-g) (tens of dB); the string is held
+    //     to its ceiling instead, cleanly (the output stays near the sum of the input and a ceiling string)
+    for (int type : { 0, 1, 2 })
+        for (float regen : { 0.4f, 0.8f, 1.0f, 1.15f })
+        {
+            ChloeVoice v; v.prepare (sr, 16); v.reset();
+            float p[kNP] = { 0.0f, 20000.0f, 0.15f, 0.0f, 0.0f, 0.33f, regen, 1.0f, 0.0f };
+            ChloeVoice::Flags f; f.type = type; f.tubeOn = false; f.ks = true; f.ksPeriod = 1.0f / 220.0f;
+            v.chains[v.active].start (0, type, false, f.ksPeriod, true); v.chains[v.active].inGain = 1.0f;
+            float buf[16]; juce::Random r (7); bool finite = true; float peak = 0; std::vector<float> o;
+            for (int blk = 0; blk < (int) sr * 3 / 16; ++blk)
+            {
+                // a steady, full-band signal at 0.3 peak: noise plus a tone sitting on the string's 3rd harmonic
+                for (int i = 0; i < 16; ++i) buf[i] = 0.15f * (r.nextFloat() * 2.0f - 1.0f) + 0.15f * std::sin (2.0f * pi * 660.0f * (float) (blk * 16 + i) / sr);
+                v.process (buf, 16, p, p, f);
+                for (int i = 0; i < 16; ++i) { finite &= std::isfinite (buf[i]); if (blk * 16 > (int) sr) peak = std::max (peak, std::abs (buf[i])); }
+                o.insert (o.end(), buf, buf + 16);
+            }
+            // level over the last two seconds, and how much it wobbles between 100 ms windows (the governor must not pump)
+            const size_t w = (size_t) (sr * 0.1); double lo = 1e9, hi = 0;
+            for (size_t i = (size_t) sr; i + w <= o.size(); i += w) { const double m = rms (o, i, i + w); lo = std::min (lo, m); hi = std::max (hi, m); }
+            char msg[160]; std::snprintf (msg, sizeof msg, "karplus %s steady input, regen %.2f: peak %.2f, rms %.3f, 100 ms windows %.3f..%.3f", typeName (type), regen, peak, rms (o, (size_t) sr, o.size()), lo, hi);
+            check (finite && peak < 0.9f && hi < 1.3 * lo, msg);
+        }
+
     std::printf (fails ? "\nOFFLINE TESTS FAILED (%d)\n" : "\nOFFLINE TESTS OK\n", fails);
     return fails;
 }

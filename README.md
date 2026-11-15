@@ -10,6 +10,8 @@ and two field recordings built in. Plug-in (AU / VST3 / LV2) and desktop app, fo
 
 ![Chloaelis](docs/screenshot.png)
 
+![Chloaelis, dark](docs/screenshot_dark.png)
+
 > **Spatial audio version: [Chloaeilius](Chloaeilius/README.md).** Chloaelis as an Ambisonics encoder (1st to 7th order, 16 channels at 3rd order up to 64 at 7th, ACN/SN3D, for the IEM and SPARTA decoders): each side's dry sound is a point, its main echo rides the Lorenz attractor and its poly taps ride a 3-D flock, so the echoes fly round you, with distance and Doppler and a sphere you can turn to see where everything is. It lives in the [`Chloaeilius`](Chloaeilius) folder of this repository.
 >
 > ![Chloaeilius](Chloaeilius/docs/views/chloaeilius_sphere_globe.png)
@@ -74,9 +76,9 @@ sides together:
 - Every switch (order, delay engine, time mode, tube type) **crossfades**: echoes ring out
   in the old setting while new sound goes through the new one, so there are no cuts.
 - It **remembers** how you left it, and **↺** resets everything.
-- **No words on its face**: every control is a letter, a mark or a picture (the **?** screen is
-  the key). And two looks: the glass HUD, or **Brick** (▦), the Windows 2000 colour scheme in
-  hard pixels.
+- **The faltung mustard look**: one flat mustard field, every control a floating folded paper
+  strip with its Greek letter (the **?** screen is the key), in a **light and a dark mode**
+  (☾ / ☀, top right; it follows your system until you choose). The colours follow the sound.
 
 ---
 
@@ -163,41 +165,45 @@ This installs the app into `/Applications` and the Audio Unit and VST3 into
 - The **middle** holds the shared controls: the Lorenz attractor (top), the poly and flock
   (bottom), the order switch, and the built-in recordings, master feedback and the vessel
   (top row).
-- **Glowing dashed lines** show where signal and modulation flow. Pulses of light follow the
-  signal.
-- Cells **glow with level**: the side's colour when it's moving, warm white when it's hot and
-  red when it's close to clipping.
-- The **Lorenz attractor** floats in the background as a hologram, with dashed lines to the
-  two cutoffs. The **boids** of the flock fly around the poly controls.
+- **Dashed lines** show where signal and modulation flow, brighter where it is louder.
+- The **colours follow the level**: the field warms with the input, and each side's cells warm
+  with its output, their folds brightening toward white when it's hot and the cells turning red
+  when it's close to clipping. In silence it is the plain mustard.
+- The **Lorenz attractor** runs in the middle as a thin line (its newest stretch white) in
+  front of a wireframe polyhedron, with dashed lines to the two cutoffs. The **boids** of the
+  flock fly around the poly controls as small chips.
+- The cells **float**: each drifts slowly about its place, in its own time. The one under the
+  cursor holds still.
 
 ### The symbols
 
-There are no words on the face: every control is a Greek letter, a mark or a small picture.
-Press **?** (top right) for this list inside the app.
+Every knob is a Greek letter on its strip, with its level as a stack of chips (or a fill, or a
+band on a rule); the switches are small chips with a word on them. Press **?** (top right) for
+this list inside the app.
 
 **Each side**
 
 | Symbol | Control | What it does |
 |:-:|---|---|
 | γ | Input | input level |
-| ω | Cutoff | filter cutoff: drag the ring up and down. A faint ring shows where modulation has pushed it |
+| ω | Cutoff | filter cutoff: drag the band up and down its rule. A hollow band shows where modulation has pushed it |
 | ζ | Resonance | filter resonance |
 | μ | Mode | filter mode: low pass > band pass > high pass > notch, continuously |
 | κ | Drive | tube drive |
-| the dial of four arcs | Tube type | the lit arc and the wires in its lens count the type: one 12AX7 (default), two EL84, three 6L6 with sag, four starved. Click for the next (alt- or right-click for the one before), or scroll |
-| ☉ / ○ | Tube on | switches the tube in and out: a lit heater, or an empty ring |
+| i · ii · iii · iv | Tube type | one 12AX7 (default), two EL84, three 6L6 with sag, four starved |
+| tube on / tube off | Tube on | switches the tube in and out |
 | τ | Time | delay time, 30 ms to 1 s |
 | φ | Regen | the delay's feedback. Past about 90% it sings on its own |
 | η | Mix | delay dry / wet |
 | ξ | Random freeze | the chance that the delay buffer gets held for a while at random moments |
-| reels / chip / buckets | Delay engine | three pictures: two reels (tape), a chip with bits going through it (PT2399), a row of buckets passing charge along (BBD). The one in use moves |
-| ⌢ / ⨯ | Time changes | either glide (slew: pitch bends) or cross over (fade: no pitch change) |
+| tape · pt2399 · bbd | Delay engine | the ageing tape loop, the chip, or the bucket brigade |
+| slew / fade | Time changes | either glide (slew: pitch bends) or cross over (fade: no pitch change) |
 | ϙ | Karplus-Strong time | the delay becomes a tuned string: see below |
-| ⌃ | High pass | high-pass filter in the delay feedback |
-| ◈ / ◇ | Freeze | holds the delay buffer. The crystal is solid while it is held (by hand or by the random freeze), hollow while it runs. On tape, a held loop slowly wears away |
-| ↻ and the reel | Fresh tape | puts on fresh tape (tape engine only). The reel beside it is the tape's condition: its pack is fat when new and thins as the tape wears |
+| hpf | High pass | high-pass filter in the delay feedback |
+| freeze | Freeze | holds the delay buffer. The chip is filled while it is held (by hand or by the random freeze) and reads *buffer held*, *buffer live* while it runs. On tape, a held loop slowly wears away |
+| refresh and the row of chips | Fresh tape | puts on fresh tape (tape engine only). The row of chips under it is the tape's condition: all filled when new, emptying as the tape wears |
 | Ω | Out | output level |
-| ∿ | LFO | the dial is its rate, the small glass vial its depth. The letter next to ∿ says what it moves (μ mode, τ time, κ drive) |
+| ~ | LFO | the small stack of chips is its rate, the small fill its depth. The letter next to ~ says what it moves (μ mode, τ time, κ drive) |
 
 **Shared (middle)**
 
@@ -207,7 +213,7 @@ Press **?** (top right) for this list inside the app.
 | ρ | Chaos | the attractor's rho: low wanders gently, high is wild |
 | β | Shape | the attractor's beta: reshapes the orbit |
 | Δ | Depth | how far the attractor moves the two cutoffs (up to ±3.5 octaves) |
-| ω › τ / τ › ω | Order | filter > tube > delay, or delay > tube > filter (the filter's and the delay's own letters, in order) |
+| filter › dly / dly › filter | Order | filter > tube > delay, or delay > tube > filter |
 | the ladder and a number | Scale | the scale the Karplus-Strong notes are tuned to, and how many notes it has. Hover to read its name, click for the list, or scroll through it |
 | ψ | Poly | up to 8 delay taps per side. All the way up is a reverb-like cloud |
 | χ | Flock | how much the boids move the poly taps' times (up to about ±0.9 octave) |
@@ -215,7 +221,7 @@ Press **?** (top right) for this list inside the app.
 | σ | Source level | fades the built-in recording in and out |
 | Φ | Master feedback | crossed: left out > right in, right out > left in |
 | ↺ | Reset | every control back to its default (the tape's wear is kept) |
-| ▦ | Brick | switches the look (top left): the glass HUD, or Brick |
+| ☾ / ☀ | Light / dark | switches the mode (top right): the mustard field, or the same drawing on mustard-black |
 | ? | Help | the key to all of this, inside the app |
 
 ### Karplus-Strong time
@@ -236,22 +242,22 @@ string: a very short, exactly tuned delay that rings at a pitch.
 - **Poly (ψ)** adds strings on other degrees of the scale, stacked up from the note you are
   on, so it plays a chord. **Flock (χ)** only detunes them a little.
 - The **engine** pictures set the string's colour here: PT2399 bright, tape softer, BBD dark.
-- **Slew (⌢)** glides between notes and **fade (⨯)** steps to them. The time LFO walks through
-  the scale.
+- **Slew** glides between notes and **fade** steps to them. The time LFO walks through the
+  scale.
 
-### The two looks
+### Light and dark
 
-**▦** (top left) switches between the glass HUD and **Brick**: the Windows 2000 "Brick" colour
-scheme, with bevelled capsules, sunk white dials, progress-bar blocks in the vials and a
-maroon graph for the filter, all in hard pixels with no blur, glow or drift. The choice is
-kept with the state.
+The look is the *faltung* system's mustard sleeve: a flat field, folded paper strips, a thin
+wireframe, lowercase Inter and IBM Plex Mono. **☾ / ☀** (top right) switches between the
+**light** mode (the mustard field, dark ink) and the **dark** one (the same drawing on
+mustard-black, with pale ink and a straw highlight). Until you choose, it follows your
+system's light or dark setting; once chosen, the mode is kept with the state. In both modes
+the colours still answer the sound, as above.
 
 ### Playing it
 
-- **Drag up and down** on any dial, glass vial or ring to change it. **Double-click** a dial to
-  reset it to its default.
-- **Hover** over a control to bring it into focus. The depth of field follows you, and the
-  field tilts slightly toward the cursor.
+- **Drag up and down** on any stack of chips, fill or band to change it. **Double-click** a
+  knob to reset it to its default.
 - **No input?** Turn up **σ** to play one of the built-in recordings through it, and pick
   which with **∞ / ≈**.
 - **Ideas to start with**
@@ -273,12 +279,13 @@ The app (`Chloaelis.app`, `Chloaelis.exe` or `Chloaelis` on Linux) has a few ext
   audio device, the input and output channels and the buffer size.
 - **Fullscreen**: the **⤢** button, or **⌘F** (Ctrl+F on Windows and Linux). It fills the
   whole screen with no menu bar or title bar, at any screen shape. **Esc** leaves it.
-- **The vessel** (top right): a glass you can pour your own audio into.
+- **The vessel** (top right): a well you pour your own audio into.
   - **Drop an audio file** onto it (WAV, AIFF, FLAC, MP3, M4A, OGG or CAF, up to 10 minutes),
     or **double-click** it to choose one.
-  - Its waveform runs up the inside, start at the bottom.
-  - The **two rings** are the loop start and end: drag them.
-  - **Drag the glass** itself (away from the rings) to set its level, shown by the liquid.
+  - Its waveform runs up the inside as a stack of strips, start at the bottom, the loop in the
+    sides' colours.
+  - The **two bands** are the loop start and end: drag them.
+  - **Drag inside it** (away from the bands) to set its level, shown on the rule beside it.
   - It plays into both sides like the built-in recordings, and is remembered with the rest
     of the state.
 
@@ -350,6 +357,7 @@ Chloaelis's code was written with Claude Code (Anthropic), working under the dir
 - **Testing.** The author reported lag (and set a 30 fps minimum), pixelation, aliasing in the blur, stepped focus and hover jitter, and had them fixed.
 - **Version 1.1.** The author asked for the tape hiss to fade rather than cut, for Karplus-Strong time tuned to Cloudfin's scales, for a Windows 2000 look (chosen as *Brick* from a set of mock-ups), for symbols in place of every word, and for the cells to sit closer together; and picked the tube dial, the engine pictures, the crystal for freeze and the reel for the tape from options drawn for them.
 - **The release.** Builds for macOS, Windows and Linux, a README, in-app help and a Homebrew install, with credit to *Splice* and *Chloe*.
+- **Version 1.2.** The author reported the new Karplus-Strong strings clipping and had a level governor put in; asked for a mock-up of the plug-in in the style of their *faltung* system, keeping the esoteric nature, the floating cells and the layout; chose the mustard field from the mock-up's four sleeves and asked for it, in light and dark, floating, as the only look (the glass HUD and Brick were removed), with the colours still answering the level of the audio.
 
 ## Credits and licence
 
@@ -357,8 +365,9 @@ Chloaelis's code was written with Claude Code (Anthropic), working under the dir
   field recordings (*baserecording1* and *hydrophone, June 2026, 3*).
 - Inspired by the 2012 game *Splice* and the *Chloe* Eurorack module by Bizarre Jezabel.
 - Built with [JUCE](https://juce.com) 9.0.5, used under the GNU AGPLv3.
-- Interface font: [Nunito](https://github.com/googlefonts/nunito) (a bold cut), SIL Open
-  Font License 1.1 (see `Resources/fonts/OFL-Nunito.txt`).
+- Interface fonts: [Inter](https://rsms.me/inter/) and [IBM Plex Mono](https://github.com/IBM/plex),
+  both SIL Open Font License 1.1 (see `Resources/fonts/Inter-OFL.txt` and
+  `Resources/fonts/IBMPlexMono-OFL.txt`).
 
 Chloaelis is free software: you can redistribute it and/or modify it under the terms of the
 **GNU Affero General Public License v3** as published by the Free Software Foundation. See

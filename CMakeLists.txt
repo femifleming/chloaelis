@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "Universal binary")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS")
 
-project(Chloaelis VERSION 1.1.1 LANGUAGES C CXX)
+project(Chloaelis VERSION 1.2.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -29,7 +29,7 @@ endif()
 option(CHLOAELIS_COPY_AFTER_BUILD "Install the plug-ins into the user plug-in folders after building" OFF)
 
 juce_add_plugin(Chloaelis
-    VERSION 1.1.1
+    VERSION 1.2.0
     COMPANY_NAME "Chloaelis"
     BUNDLE_ID "com.chloaelis.chloaelis"
     PLUGIN_MANUFACTURER_CODE Chls
@@ -49,9 +49,10 @@ juce_add_plugin(Chloaelis
     VST3_CATEGORIES Fx
     COPY_PLUGIN_AFTER_BUILD ${CHLOAELIS_COPY_AFTER_BUILD})
 
-# Nunito Bold (SIL Open Font License), embedded so the UI looks the same on any machine
+# Inter and IBM Plex Mono (SIL Open Font License), embedded so the UI looks the same on any machine
 juce_add_binary_data(ChloaelisFonts SOURCES
-    Resources/fonts/NunitoBold.ttf)
+    Resources/fonts/Inter-Regular.ttf Resources/fonts/Inter-Medium.ttf
+    Resources/fonts/IBMPlexMono-Regular.ttf Resources/fonts/IBMPlexMono-Medium.ttf)
 
 # the built-in source recordings (Ogg Vorbis, ~16 MB), compiled into the plug-in
 juce_add_binary_data(ChloaelisAudio HEADER_NAME ChlAudio.h NAMESPACE ChlAudio SOURCES
@@ -62,7 +63,7 @@ target_sources(Chloaelis PRIVATE
     Source/PluginProcessor.cpp
     Source/PluginEditor.cpp)
 
-target_compile_definitions(Chloaelis PUBLIC ${CHL_DEFS})
+target_compile_definitions(Chloaelis PUBLIC ${CHL_DEFS} CHL_VERSION="${PROJECT_VERSION}")
 
 if(MSVC)
     target_compile_options(Chloaelis PRIVATE /bigobj)
@@ -90,7 +91,7 @@ if(CHLOAELIS_BUILD_TESTS)
 
     juce_add_gui_app(ChloaelisHostTest PRODUCT_NAME "ChloaelisHostTest")
     target_sources(ChloaelisHostTest PRIVATE tests/HostTest.cpp Source/PluginProcessor.cpp Source/PluginEditor.cpp)
-    target_compile_definitions(ChloaelisHostTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
+    target_compile_definitions(ChloaelisHostTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1 CHL_VERSION="${PROJECT_VERSION}")
     target_link_libraries(ChloaelisHostTest PRIVATE ChloaelisFonts ChloaelisAudio juce::juce_audio_utils juce::juce_dsp juce::juce_opengl
         PUBLIC juce::juce_recommended_config_flags)
     if(APPLE)

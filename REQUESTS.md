@@ -205,3 +205,14 @@ Every request typed while this was being designed and built with Claude Code, in
 
 
 1. "for every single app and vst on my github, just make the app logo icon extremely minimal, a letter from this font [Septambres Neau] in some color, on some color background, update all the app icons." (New app icons: one Septambres Neau glyph, one colour on one colour.)
+
+
+## 2026-11-15
+
+> with the new karplus strong alg on chloealis the output is clipping so much to the point of distorting and glitching.
+
+> could you also mockup what the plguin could look like if it was alto un the style of faltung, but keep the soteric nature, the cells floating and the layout
+
+> have a light and dark mode of mustard fall, floating, for both plugins. nake it the default and remove all other themes.
+
+> have the color theme in chloealis apps also still respond to the level of the audio.

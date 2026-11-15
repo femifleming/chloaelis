@@ -45,7 +45,7 @@ public:
     std::array<std::atomic<float>, chl::dsp::Flock::n> flockX {}, flockY {};   // the boids (-1..1), for the display
 
     std::array<std::atomic<float>, chl::numSides> ksHz {};             // Karplus-Strong: the note each side is on now (Hz)
-    std::atomic<int> uiTheme { 0 };                                    // 0 = the glass HUD, 1 = Brick (Windows 2000)
+    std::atomic<int> uiDark { -1 };                                    // the look: 0 light, 1 dark, -1 not chosen (the editor follows the system)
 
     // written by the UI
     std::array<std::atomic<bool>, chl::numSides> refreshTape {};

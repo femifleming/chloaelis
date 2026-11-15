@@ -12,6 +12,8 @@ with its echoes flying round you on the flock and the Lorenz attractor.<br>
 
 ![Chloaeilius](docs/screenshot.png)
 
+![Chloaeilius, dark](docs/screenshot_dark.png)
+
 **[The manual (PDF)](docs/manual/Chloaeilius%20Manual.pdf)**: the sphere, the desktop app, Chloaelis's controls, every parameter and answers to common problems.
 
 ---
@@ -28,24 +30,26 @@ Where the sound goes:
 - **Distance**, after the IEM RoomEncoder: every point has its own propagation delay (so echoes flying towards you or away bend in pitch), 1/r level, a little air absorption and first-order reflections from the walls of a room round you. The **Distance** knob (lambda) is the size of the bubble you're in, from 1.5 m to 24 m: in a small bubble everything is close and loud and the room answers quickly; in a big one everything is far, quieter, later and roomier.
 - With the order on *delay > filter*, the dry sound goes through the tube and filter as before and each tap through its own filter (the taps skip the tube there, so they stay apart).
 
-**Space View**, the switch of four marks at the top (∞ ☉ ⊞ ◎), shows the sphere four ways (the sound is the same in all of them):
+**Space View**, the switch of four chips at the top (lorenz · orrery · map · radar), shows the sphere four ways (the sound is the same in all of them):
 
 | | |
 | --- | --- |
-| ∞ **Lorenz**: the attractor alone, as in Chloaelis | ![Lorenz](docs/views/chloaeilius_view_lorenz.png) |
-| ☉ **Orrery**: a dotted globe round you, turning slowly and leaning with the cursor; every point flies inside it with its trail, and the loud places glow on its skin | ![Orrery](docs/views/chloaeilius_view_orrery.png) |
-| ⊞ **Map**: the whole sphere unrolled (a Hammer projection, as the IEM EnergyVisualizer), ahead in the middle, behind at both edges, with the energy as glowing dust | ![Map](docs/views/chloaeilius_view_map.png) |
-| ◎ **Radar**: from above, rings in metres out to the bubble's edge, each point on a stalk as tall as it is high, and a ripple wherever an echo lands | ![Radar](docs/views/chloaeilius_view_radar.png) |
+| **lorenz**: the attractor alone, as in Chloaelis | ![Lorenz](docs/views/chloaeilius_view_lorenz.png) |
+| **orrery**: a wireframe globe round you, turning slowly; every point flies inside it as a small chip with a thin trail, and the loud places are dotted on its skin | ![Orrery](docs/views/chloaeilius_view_orrery.png) |
+| **map**: the whole sphere unrolled (a Hammer projection, as the IEM EnergyVisualizer), ahead in the middle, behind at both edges, with the energy as a field of small chips | ![Map](docs/views/chloaeilius_view_map.png) |
+| **radar**: from above, dashed rings in metres out to the bubble's edge, each point on a stalk as tall as it is high, and a ripple wherever an echo lands | ![Radar](docs/views/chloaeilius_view_radar.png) |
 
-**The sphere button** (the circle under **?** in the top right) opens a big sphere over the whole window, with nothing in the way: drag to turn it, scroll to zoom, double-click to set it straight, and switch between globe (☉), map (⊞) and radar (◎) along the top. Where things are is marked by which half of a disc is lit: ◓ ahead, ◐ left, ◑ right, ◒ behind. Every point is named (L DRY, L ECHO, L1 to L7 for the taps, and the same for R), and the loud places glow on the glass.
+**The sphere button** (the circle under **?** in the top right) opens a big sphere over the whole window, with nothing in the way: drag to turn it, scroll to zoom, double-click to set it straight, and switch between globe, map and radar along the top. Where things are is marked by which half of a disc is lit: ◓ ahead, ◐ left, ◑ right, ◒ behind. Every point is named (l dry, l echo, l1 to l7 for the taps, and the same for r), and the loud places are dotted on the skin. It comes in the light and the dark mode like everything else.
 
 ![The sphere](docs/views/chloaeilius_sphere_globe.png)
+
+![The sphere, dark](docs/views/chloaeilius_sphere_globe_dark.png)
 
 ## The desktop app
 
 `Chloaeilius.app` (`Chloaeilius.exe` on Windows, `Chloaeilius` on Linux) is Chloaeilius on its own, with no DAW, and it has Chloaelis's desktop extras:
 
-- **The vessel** (top right): load your own sample. Drop an audio file onto it (WAV, AIFF, FLAC, MP3, M4A, OGG or CAF, up to 10 minutes) or double-click it to choose one. The two rings set the loop, and dragging the glass sets its level. It plays into both sides and its echoes fly round you like everything else.
+- **The vessel** (top right): load your own sample. Drop an audio file onto it (WAV, AIFF, FLAC, MP3, M4A, OGG or CAF, up to 10 minutes) or double-click it to choose one. The two bands set the loop, and dragging inside it sets its level. It plays into both sides and its echoes fly round you like everything else.
 - **Listen** (top left), because without a DAW there's nowhere to put a decoder:
   - **∩ Headphones**: the sphere decoded to binaural (a spherical-head model), on outputs 1 and 2.
   - **⟨⟩ Speakers**: a stereo decode for two loudspeakers.
@@ -69,7 +73,7 @@ cmake --build build-chloaeilius --config Release --target Chloaeilius_All
 
 It appears in your DAW as **Chloaeilius** under **Chloaelis**. The tests are `ChloaeiliusTest`, `ChloaeiliusSpatialTest` (where the sound lands, every channel against AmbiX, CPU) and `ChloaeiliusHostTest` (`SPACE_SHOTS=<folder>` saves every view of the sphere).
 
-Everything else works as in Chloaelis, including what came with its version 1.1: Karplus-Strong time (ϙ) tuned to Cloudfin's scales, the tape hiss that fades instead of cutting, symbols in place of every word, and the Brick look (▦). In the sphere, a string's poly taps still each ride their own bird, so a chord is spread round you. See [its README](../README.md#how-to-use-it).
+Everything else works as in Chloaelis, including what came with its version 1.1: Karplus-Strong time (ϙ) tuned to Cloudfin's scales, the tape hiss that fades instead of cutting, symbols in place of every word; and with its version 1.2 the faltung mustard look, light or dark (☾ / ☀, top right), the colours following the sound. In the sphere, a string's poly taps still each ride their own bird, so a chord is spread round you. See [its README](../README.md#how-to-use-it).
 
 
 ## Human contributions

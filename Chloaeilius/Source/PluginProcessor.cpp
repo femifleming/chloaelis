@@ -490,7 +490,7 @@ ValueTree ChloaelisProcessor::stateWithExtras()
         state.setProperty ("vesselEnd", vesselEnd.load(), nullptr);
     }
     state.setProperty ("vesselLevel", vesselLevel.load(), nullptr);
-    state.setProperty ("uiTheme", uiTheme.load(), nullptr);
+    if (uiDark.load() >= 0) state.setProperty ("uiDark", uiDark.load(), nullptr);
     return state;
 }
 
@@ -504,7 +504,8 @@ void ChloaelisProcessor::applyState (const ValueTree& tree)
         tapeAge[(size_t) s].store (a);
     }
     vesselLevel.store ((float) tree.getProperty ("vesselLevel", 0.0f));
-    if (tree.hasProperty ("uiTheme")) uiTheme.store (jlimit (0, 1, (int) tree.getProperty ("uiTheme")));
+    // (states from 1.1 carry "uiTheme", the glass / Brick choice: ignored, the look follows the system until chosen)
+    if (tree.hasProperty ("uiDark")) uiDark.store (jlimit (0, 1, (int) tree.getProperty ("uiDark")));
     const String vp = tree.getProperty ("vesselPath", String());
     if (isStandalone() && vp.isNotEmpty() && File (vp).existsAsFile())
     {

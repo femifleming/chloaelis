@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "Universal binary")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS")
 
-project(Chloaeilius VERSION 0.3.1 LANGUAGES C CXX)
+project(Chloaeilius VERSION 0.4.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -31,7 +31,7 @@ endif()
 option(CHLOAEILIUS_COPY_AFTER_BUILD "Install the plug-ins into the user plug-in folders after building" OFF)
 
 juce_add_plugin(Chloaeilius
-    VERSION 0.3.1
+    VERSION 0.4.0
     COMPANY_NAME "Chloaelis"
     BUNDLE_ID "com.chloaelis.chloaeilius"
     PLUGIN_MANUFACTURER_CODE Chls
@@ -51,9 +51,10 @@ juce_add_plugin(Chloaeilius
     VST3_CATEGORIES Fx Spatial
     COPY_PLUGIN_AFTER_BUILD ${CHLOAEILIUS_COPY_AFTER_BUILD})
 
-# Nunito Bold (SIL Open Font License), embedded so the UI looks the same on any machine
+# Inter and IBM Plex Mono (SIL Open Font License), embedded so the UI looks the same on any machine
 juce_add_binary_data(ChloaelisFonts SOURCES
-    ${CHL_ROOT}/Resources/fonts/NunitoBold.ttf)
+    ${CHL_ROOT}/Resources/fonts/Inter-Regular.ttf ${CHL_ROOT}/Resources/fonts/Inter-Medium.ttf
+    ${CHL_ROOT}/Resources/fonts/IBMPlexMono-Regular.ttf ${CHL_ROOT}/Resources/fonts/IBMPlexMono-Medium.ttf)
 
 # the built-in source recordings (Ogg Vorbis, ~16 MB), compiled into the plug-in
 juce_add_binary_data(ChloaelisAudio HEADER_NAME ChlAudio.h NAMESPACE ChlAudio SOURCES
@@ -64,7 +65,7 @@ target_sources(Chloaeilius PRIVATE
     Source/PluginProcessor.cpp
     Source/PluginEditor.cpp)
 
-target_compile_definitions(Chloaeilius PUBLIC ${CHL_DEFS})
+target_compile_definitions(Chloaeilius PUBLIC ${CHL_DEFS} CHL_VERSION="${PROJECT_VERSION}")
 
 if(MSVC)
     target_compile_options(Chloaeilius PRIVATE /bigobj)
@@ -92,13 +93,13 @@ if(CHLOAEILIUS_BUILD_TESTS)
 
     juce_add_console_app(ChloaeiliusSpatialTest PRODUCT_NAME "ChloaeiliusSpatialTest")
     target_sources(ChloaeiliusSpatialTest PRIVATE tests/SpatialTest.cpp Source/PluginProcessor.cpp Source/PluginEditor.cpp)
-    target_compile_definitions(ChloaeiliusSpatialTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
+    target_compile_definitions(ChloaeiliusSpatialTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 CHL_VERSION="${PROJECT_VERSION}")
     target_link_libraries(ChloaeiliusSpatialTest PRIVATE ChloaelisFonts ChloaelisAudio juce::juce_audio_utils juce::juce_dsp juce::juce_opengl
         PUBLIC juce::juce_recommended_config_flags)
 
     juce_add_gui_app(ChloaeiliusHostTest PRODUCT_NAME "ChloaeiliusHostTest")
     target_sources(ChloaeiliusHostTest PRIVATE tests/HostTest.cpp Source/PluginProcessor.cpp Source/PluginEditor.cpp)
-    target_compile_definitions(ChloaeiliusHostTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1)
+    target_compile_definitions(ChloaeiliusHostTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_MODAL_LOOPS_PERMITTED=1 CHL_VERSION="${PROJECT_VERSION}")
     target_link_libraries(ChloaeiliusHostTest PRIVATE ChloaelisFonts ChloaelisAudio juce::juce_audio_utils juce::juce_dsp juce::juce_opengl
         PUBLIC juce::juce_recommended_config_flags)
     if(APPLE)
