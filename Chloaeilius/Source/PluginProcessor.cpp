@@ -1,5 +1,7 @@
 #include "PluginProcessor.h"
-#include "PluginEditor.h"
+#if ! CHL_HEADLESS
+ #include "PluginEditor.h"     // (the offline test builds the processor without its editor)
+#endif
 #include "ChlAudio.h"
 
 using namespace juce;
@@ -589,7 +591,11 @@ void ChloaelisProcessor::loadLastState()
         applyState (ValueTree::fromXml (*xml));
 }
 
+#if CHL_HEADLESS
+AudioProcessorEditor* ChloaelisProcessor::createEditor() { return nullptr; }
+#else
 AudioProcessorEditor* ChloaelisProcessor::createEditor() { return new ChloaelisEditor (*this); }
+#endif
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter() { return new ChloaelisProcessor(); }
 

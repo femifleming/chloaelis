@@ -1,4 +1,8 @@
 #include "PluginEditor.h"
+#if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
+ #include <juce_audio_utils/juce_audio_utils.h>
+ #include <juce_audio_plugin_client/Standalone/juce_StandaloneFilterWindow.h>
+#endif
 #include <complex>
 #include <BinaryData.h>
 
@@ -1709,6 +1713,36 @@ void ChloaelisEditor::showHelpForTest (bool show)
 
 void ChloaelisEditor::setDensityForTest (float d) { density = jlimit (0.5f, 2.0f, d); }
 
+// The desktop app: JUCE's standalone wrapper mutes the audio input by default (a guard against
+// feedback through the speakers) and remembers whichever devices it opened on the first run, so
+// a fresh install sat there silent with no input device and the input muted. The first time the
+// window exists we unmute the input and, if no input device was chosen, pick the system's default
+// one; after that the audio settings are the user's.
+void ChloaelisEditor::prepareStandaloneInput (DocumentWindow* w)
+{
+   #if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
+    auto* sw = dynamic_cast<StandaloneFilterWindow*> (w);
+    auto* h = sw != nullptr ? sw->getPluginHolder() : nullptr;
+    if (h == nullptr || h->settings == nullptr || h->settings->getBoolValue ("chlInputReady", false)) return;
+    h->getMuteInputValue() = false;
+    auto setup = h->deviceManager.getAudioDeviceSetup();
+    if (setup.inputDeviceName.isEmpty())
+        if (auto* type = h->deviceManager.getCurrentDeviceTypeObject())
+        {
+            const auto names = type->getDeviceNames (true);
+            if (! names.isEmpty())
+            {
+                setup.inputDeviceName = names[jlimit (0, names.size() - 1, type->getDefaultDeviceIndex (true))];
+                setup.useDefaultInputChannels = true;
+                h->deviceManager.setAudioDeviceSetup (setup, true);
+            }
+        }
+    h->settings->setValue ("chlInputReady", true);
+   #else
+    ignoreUnused (w);
+   #endif
+}
+
 void ChloaelisEditor::timerCallback()
 {
     // standalone: once the window exists, listen for cmd+F / esc on it
@@ -1717,6 +1751,7 @@ void ChloaelisEditor::timerCallback()
         {
             hostWindow = w;
             w->addKeyListener (this);
+            prepareStandaloneInput (w);
         }
     static_cast<Content*> (content.get())->tick();
 }

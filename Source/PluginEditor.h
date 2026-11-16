@@ -22,6 +22,7 @@ public:
 
 private:
     void timerCallback() override;
+    void prepareStandaloneInput (juce::DocumentWindow*);
 
     // standalone: true fullscreen (kiosk: no menu bar, no dock, no title bar), cmd+F / esc
     void toggleFullScreen();

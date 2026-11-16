@@ -216,3 +216,7 @@ Every request typed while this was being designed and built with Claude Code, in
 > have a light and dark mode of mustard fall, floating, for both plugins. nake it the default and remove all other themes.
 
 > have the color theme in chloealis apps also still respond to the level of the audio.
+
+> chloealis still clipped out and then completley shut off audio when i swiotched it into karplus strong mode
+
+> check vsts and desktop apps

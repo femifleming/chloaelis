@@ -744,7 +744,7 @@ namespace chl::dsp
             dcLead = 1.5f / (twoPi * sr);       // the blocker's phase lead at a note of period P is dcLead * P * P samples
             reset();
         }
-        void reset() { std::fill (buf.begin(), buf.end(), 0.0f); w = 0; lp = 0; xf = 1; fading = false; dc.reset(); msq = 0; lim = 1; }
+        void reset() { std::fill (buf.begin(), buf.end(), 0.0f); w = 0; lp = 0; xf = 1; fading = false; dc.reset(); msq = 0; lim = 1; pk = 0; }
         void setPeriod (float sec, bool jump)
         {
             dTarget = juce::jlimit (5.0f, (float) size - 8.0f, sec * sr);
@@ -759,12 +759,16 @@ namespace chl::dsp
         // string's level (RMS over a few periods, so the gain doesn't ripple at the pitch) reaches
         // the ceiling: the string rings up to the ceiling and no further, and past 100% regen it
         // sings there, clean. The tanh is left only as a safety net, well above the ceiling.
-        static constexpr float ceiling = 0.2f;       // RMS: a sine at -11 dBFS
-        float msq = 0.0f, msqA = 0.001f, lim = 1.0f;
+        static constexpr float ceiling = 0.2f, peakCeiling = 0.5f;   // RMS: a sine at -11 dBFS; and no peak past 0.5
+        float msq = 0.0f, msqA = 0.001f, lim = 1.0f, pk = 0.0f;
         inline float feedback (float f, float regen)
         {
             msq += (f * f - msq) * msqA;
-            lim = msq > ceiling * ceiling ? ceiling / std::sqrt (msq) : 1.0f;
+            // the peak too (fast up, let go over the same few periods): a string's crest sits well
+            // above its rms, so a pluck's transient would otherwise overshoot the ceiling
+            const float a = std::abs (f);
+            pk = a > pk ? a : pk * (1.0f - 2.0f * msqA);
+            lim = juce::jmin (msq > ceiling * ceiling ? ceiling / std::sqrt (msq) : 1.0f, pk > peakCeiling ? peakCeiling / pk : 1.0f);
             return 4.0f * fastTanh (0.25f * f * regen * lim);
         }
         inline float readAt (float d) const
@@ -784,6 +788,19 @@ namespace chl::dsp
         {
             const float d = damp[juce::jlimit (0, 2, type)];
             auto lineFor = [&] (float period) { return juce::jmax (3.0f, freeze ? period : period - 1.0f - 0.5f * d + dcLead * period * period); };
+            if (freeze)
+            {
+                // Held: the string goes round on its own, undamped, at the period it had when it was
+                // held. No fade while held: the fade reads the line at two places and sums them, and
+                // writing that sum back into a line that feeds itself is a loop with a gain above one
+                // (|cos| + |sin| reaches 1.41), which ran away to infinity, drove the tube into cut-off
+                // and left silence. A fade in progress is dropped where it stands.
+                fading = false; xf = 1;
+                const float y = readAt (lineFor (dA));
+                buf[(size_t) w] = y;
+                if (++w >= size) w = 0;
+                return y;
+            }
             if (! fadeMode) { fading = false; xf = 1; dA += (dTarget - dA) * slewA; }
             else if (! fading && std::abs (dTarget - dA) > 0.02f) { dB = dTarget; fading = true; xf = 0; }
             float y = readAt (lineFor (dA));
@@ -794,9 +811,8 @@ namespace chl::dsp
                 if (xf >= 1.0f) { xf = 1.0f; dA = dB; fading = false; y = yb; }
                 else y = y * std::cos (xf * pi * 0.5f) + yb * std::sin (xf * pi * 0.5f);
             }
-            buf[(size_t) w] = freeze ? y : in;      // held: the string goes round on its own, undamped
+            buf[(size_t) w] = in;
             if (++w >= size) w = 0;
-            if (freeze) return y;
             const float o = y + (lp - y) * (0.5f * d);
             lp = y;
             return dc.process (o);
@@ -1113,6 +1129,8 @@ namespace chl::dsp
         float tapeAge = 0;
         static constexpr float tapeLifeSec = 600.0f;   // ~10 minutes from new to ruined
         float buf[64] {}, acc[64] {};
+        int nanEvents = 0;        // how often the last line below had to clear a chain (the tests want 0)
+        float rawPeak = 0.0f;     // the block's loudest sample before the last line (a peak meter; the tests watch it)
 
         void prepare (double s, int maxBlock, int seed = 0)
         {
@@ -1214,11 +1232,26 @@ namespace chl::dsp
             }
             wetLevel = chains[active].wetLevel;
 
+            // The last line. Nothing non-finite ever leaves (and the chains that made it are
+            // cleared, so the sound comes straight back), and a soft knee from 0.85 up that never
+            // passes 1.0: the edge of the desktop app's converter.
+            bool bad = false;
+            rawPeak = 0.0f;
             for (int i = 0; i < n; ++i)
             {
-                const float y = acc[i] * dbToGain (lerp (vOut, i));
+                float y = acc[i] * dbToGain (lerp (vOut, i));
+                if (! std::isfinite (y)) { bad = true; y = 0.0f; }
+                const float a = std::abs (y);
+                if (a > rawPeak) rawPeak = a;
+                if (a > 0.85f) y = (y < 0.0f ? -1.0f : 1.0f) * (0.85f + 0.15f * fastTanh ((a - 0.85f) * (1.0f / 0.15f)));
                 io[i] = y;
                 outLevel += meterA * (std::abs (y) - outLevel);
+            }
+            if (bad)
+            {
+                ++nanEvents;
+                for (auto& ch : chains) ch.reset();
+                inLevel = outLevel = wetLevel = 0.0f;
             }
         }
 

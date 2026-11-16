@@ -16,7 +16,11 @@ public:
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     using AudioProcessor::processBlock;
 
+#if CHL_HEADLESS
+    bool hasEditor() const override { return false; }
+#else
     bool hasEditor() const override { return true; }
+#endif
 
     const juce::String getName() const override { return "Chloaelis"; }
     bool acceptsMidi() const override { return false; }
@@ -60,6 +64,7 @@ public:
         juce::String name;
     };
     bool isStandalone() const { return wrapperType == wrapperType_Standalone; }
+    const chl::dsp::ChloeVoice& voiceForTest (int s) const { return voices[(size_t) s]; }   // (the stress test looks inside)
     bool loadVesselFile (const juce::File&, bool keepLoop = false);   // message thread
     std::shared_ptr<const VesselClip> vesselForUi() const { return vesselUi; }
     std::atomic<float> vesselStart { 0.0f }, vesselEnd { 1.0f }, vesselLevel { 0.0f }, vesselPos { 0.0f };

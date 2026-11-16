@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "Universal binary")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum macOS")
 
-project(Chloaeilius VERSION 0.4.0 LANGUAGES C CXX)
+project(Chloaeilius VERSION 0.4.1 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -31,7 +31,7 @@ endif()
 option(CHLOAEILIUS_COPY_AFTER_BUILD "Install the plug-ins into the user plug-in folders after building" OFF)
 
 juce_add_plugin(Chloaeilius
-    VERSION 0.4.0
+    VERSION 0.4.1
     COMPANY_NAME "Chloaelis"
     BUNDLE_ID "com.chloaelis.chloaeilius"
     PLUGIN_MANUFACTURER_CODE Chls
@@ -45,6 +45,8 @@ juce_add_plugin(Chloaeilius
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
+    MICROPHONE_PERMISSION_ENABLED TRUE
+    MICROPHONE_PERMISSION_TEXT "Chloaeilius listens to the audio input chosen in its audio settings."
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     AU_MAIN_TYPE kAudioUnitType_Effect
@@ -86,9 +88,10 @@ target_link_libraries(Chloaeilius
 option(CHLOAEILIUS_BUILD_TESTS "Build offline DSP + host tests" ON)
 if(CHLOAEILIUS_BUILD_TESTS)
     juce_add_console_app(ChloaeiliusTest PRODUCT_NAME "ChloaeiliusTest")
-    target_sources(ChloaeiliusTest PRIVATE tests/OfflineTest.cpp)
-    target_compile_definitions(ChloaeiliusTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
-    target_link_libraries(ChloaeiliusTest PRIVATE juce::juce_dsp juce::juce_audio_formats
+    # (the processor is built in too, without its editor, so the tests can drive the whole plug-in as a host does)
+    target_sources(ChloaeiliusTest PRIVATE tests/OfflineTest.cpp Source/PluginProcessor.cpp)
+    target_compile_definitions(ChloaeiliusTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 CHL_HEADLESS=1 CHL_VERSION="${PROJECT_VERSION}")
+    target_link_libraries(ChloaeiliusTest PRIVATE ChloaelisAudio juce::juce_audio_utils juce::juce_dsp juce::juce_audio_formats
         PUBLIC juce::juce_recommended_config_flags)
 
     juce_add_console_app(ChloaeiliusSpatialTest PRODUCT_NAME "ChloaeiliusSpatialTest")

@@ -19,7 +19,11 @@ public:
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
     using AudioProcessor::processBlock;
 
+#if CHL_HEADLESS
+    bool hasEditor() const override { return false; }
+#else
     bool hasEditor() const override { return true; }
+#endif
 
     const juce::String getName() const override { return "Chloaeilius"; }
     bool acceptsMidi() const override { return false; }
@@ -79,6 +83,7 @@ public:
         juce::String name;
     };
     bool isStandalone() const { return wrapperType == wrapperType_Standalone; }
+    const chl::dsp::ChloeVoice& voiceForTest (int s) const { return voices[(size_t) s]; }   // (the stress test looks inside)
     static inline bool forceDesktop = false;   // (the tests pretend to be the desktop app)
     bool desktop() const { return isStandalone() || forceDesktop; }   // the vessel, and listening for you
     bool loadVesselFile (const juce::File&, bool keepLoop = false);   // message thread

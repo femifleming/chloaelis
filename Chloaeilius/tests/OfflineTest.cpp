@@ -2,6 +2,9 @@
 #include <juce_dsp/juce_dsp.h>
 #include <juce_audio_formats/juce_audio_formats.h>
 #include "../Source/DSP.h"
+#if CHL_HEADLESS
+ #include "../Source/PluginProcessor.h"   // (test 14 drives the whole plug-in)
+#endif
 #include <cstdio>
 
 using namespace chl::dsp;
@@ -44,6 +47,13 @@ static double zcFreq (const std::vector<float>& v, size_t a, size_t b, float sr)
 
 int main (int argc, char** argv)
 {
+    // (the processor remembers its last state in the user's settings: the tests start from the
+    //  defaults and never touch it)
+   #if JUCE_WINDOWS
+    _putenv_s ("CHL_NO_LASTSTATE", "1");
+   #else
+    setenv ("CHL_NO_LASTSTATE", "1", 1);
+   #endif
     const float sr = 48000.0f;
     juce::File outDir (argc > 1 ? argv[1] : juce::File::getCurrentWorkingDirectory().getFullPathName());
 
@@ -372,6 +382,167 @@ int main (int argc, char** argv)
             char msg[160]; std::snprintf (msg, sizeof msg, "karplus %s steady input, regen %.2f: peak %.2f, rms %.3f, 100 ms windows %.3f..%.3f", typeName (type), regen, peak, rms (o, (size_t) sr, o.size()), lo, hi);
             check (finite && peak < 0.9f && hi < 1.3 * lo, msg);
         }
+
+
+#if CHL_HEADLESS
+    // 14. The whole plug-in, driven as a host and a player do: hot programme material through the
+    // processor while the Karplus-Strong switch is flipped with the sound running, the note swept
+    // across its whole range (fast, and parked at both ends), regen taken to the top and back, poly
+    // and the flock up, freeze, slew and fade, every engine, both orders, the tube up, the filter
+    // resonant and swept, the master feedback up, a long steady sine, at three sample rates and
+    // block sizes from 32 to 2048. Nothing may ever go non-finite, the output stays under the
+    // ceiling, and the sound is back after every change.
+    {
+        juce::ScopedJuceInitialiser_GUI juceInit;
+        constexpr float ceiling = 1.0f;
+        struct Host
+        {
+            ChloaelisProcessor p;
+            double sr; int block, nOut;
+            juce::AudioBuffer<float> buf; juce::MidiBuffer midi; juce::Random rng { 11 };
+            long t = 0; bool finite = true; float peak = 0, rawPeak = 0; int kind = 0;
+            juce::String firstBad, peakAt;
+            Host (double s, int b) : sr (s), block (b)
+            {
+                nOut = juce::jmax (2, p.getTotalNumOutputChannels());
+                p.setPlayConfigDetails (2, nOut, sr, block);
+                p.prepareToPlay (sr, block);
+                buf.setSize (nOut, block);
+            }
+            void set (const juce::String& id, float real) { auto* prm = p.apvts.getParameter (id); prm->setValueNotifyingHost (prm->convertTo0to1 (real)); }
+            void setN (const juce::String& id, float norm) { p.apvts.getParameter (id)->setValueNotifyingHost (norm); }
+            void both (int prm, float real) { for (int s = 0; s < 2; ++s) set (chl::pid (s, prm), real); }
+            void bothN (int prm, float norm) { for (int s = 0; s < 2; ++s) setN (chl::pid (s, prm), norm); }
+            void bothId (juce::String (*id) (int), float real) { for (int s = 0; s < 2; ++s) set (id (s), real); }
+            // runs seconds of audio; returns the output's rms over the last quarter of it
+            double run (double seconds, const char* label)
+            {
+                const int blocks = juce::jmax (1, (int) (seconds * sr / block)), tailFrom = blocks * 3 / 4;
+                double e = 0; long cnt = 0;
+                for (int b = 0; b < blocks; ++b)
+                {
+                    for (int i = 0; i < block; ++i, ++t)
+                    {
+                        const float ph = (float) t / (float) sr;
+                        const float v = kind == 0 ? 0.55f * (rng.nextFloat() * 2.0f - 1.0f) + 0.2f * std::sin (2.0f * pi * 110.0f * ph) + 0.15f * std::sin (2.0f * pi * 1234.0f * ph)
+                                      : kind == 1 ? 0.8f * std::sin (2.0f * pi * 220.0f * ph) : 0.0f;
+                        buf.setSample (0, i, v); buf.setSample (1, i, v * 0.9f);
+                    }
+                    for (int c = 2; c < nOut; ++c) buf.clear (c, 0, block);
+                    p.processBlock (buf, midi);
+                    for (int s = 0; s < 2; ++s)
+                        rawPeak = juce::jmax (rawPeak, p.voiceForTest (s).rawPeak);
+                    for (int s = 0; s < 2; ++s)
+                        if (p.voiceForTest (s).nanEvents > 0 && finite) { firstBad = juce::String (label) + ", side " + juce::String (s) + " went non-finite inside (block " + juce::String (b) + " of " + juce::String (blocks) + ")"; finite = false; }
+                    for (int c = 0; c < nOut; ++c)
+                    {
+                        const float* d = buf.getReadPointer (c);
+                        for (int i = 0; i < block; ++i)
+                        {
+                            if (! std::isfinite (d[i]))
+                            {
+                                if (finite) firstBad = juce::String (label) + ", ch " + juce::String (c) + ", block " + juce::String (b) + " of " + juce::String (blocks);
+                                finite = false;
+                                continue;
+                            }
+                            const float a = std::abs (d[i]);
+                            if (a > peak) { peak = a; if (a > ceiling && peakAt.isEmpty()) peakAt = juce::String (label) + ", block " + juce::String (b) + " of " + juce::String (blocks); }
+                            if (b >= tailFrom && c < 2) { e += (double) d[i] * d[i]; ++cnt; }
+                        }
+                    }
+                }
+                return std::sqrt (e / (double) juce::jmax (1L, cnt));
+            }
+        };
+        const std::pair<double, int> setups[] = { { 48000.0, 32 }, { 44100.0, 64 }, { 48000.0, 512 }, { 96000.0, 2048 } };
+        for (auto [srate, blk] : setups)
+        {
+            Host h (srate, blk);
+            juce::String quietAt;
+            auto step = [&] (const char* label, double secs)
+            {
+                const double r = h.run (secs, label);
+                if (r < 1.0e-3 && quietAt.isEmpty()) quietAt = juce::String (label) + " (rms " + juce::String (r, 5) + ")";
+            };
+            step ("defaults", 1.0);
+            h.bothId (chl::ksId, 1.0f);                       step ("karplus on with the sound running", 2.0);
+            h.both (chl::wet, 1.0f); h.both (chl::ltDepth, 1.0f); h.both (chl::lmDepth, 1.0f); h.set (chl::widthId, 1.0f); h.set (chl::flockId, 1.0f); h.bothId (chl::hpfId, 1.0f); h.bothId (chl::delayTypeId, 2.0f); h.set (chl::lzDepthId, 0.5f);
+            step ("all wet, the time and mode lfos across their whole range, poly, flock, hpf, bbd, lorenz", 4.0);
+            h.both (chl::ltDepth, 0.0f); h.both (chl::lmDepth, 0.0f); h.both (chl::wet, 0.35f); h.set (chl::widthId, 0.0f); h.set (chl::flockId, 0.0f); h.bothId (chl::hpfId, 0.0f); h.bothId (chl::delayTypeId, 1.0f); h.set (chl::lzDepthId, 0.0f);
+            step ("back to the defaults", 1.0);
+            for (int k = 0; k <= 20; ++k) { h.bothN (chl::time, (float) k / 20.0f); step ("note sweep up", 0.08); }
+            for (int k = 20; k >= 0; --k) { h.bothN (chl::time, (float) k / 20.0f); step ("note sweep down, fast", 0.03); }
+            h.bothN (chl::time, 0.0f);                        step ("highest note", 0.6);
+            h.bothN (chl::time, 1.0f);                        step ("lowest note", 0.6);
+            h.bothN (chl::time, 0.5f);                        step ("middle note", 0.4);
+            for (float r : { 0.0f, 0.3f, 0.6f, 0.9f, 1.0f, 1.15f }) { h.both (chl::regen, r); step ("regen up", 0.3); }
+            step ("regen 1.15 held", 1.5);
+            for (float r : { 0.9f, 0.4f, 0.0f, 0.4f }) { h.both (chl::regen, r); step ("regen back", 0.3); }
+            h.set (chl::widthId, 1.0f); h.set (chl::flockId, 1.0f); step ("poly 8 taps + flock", 2.0);
+            h.bothId (chl::freezeId, 1.0f);                   step ("freeze", 0.5);
+            h.bothId (chl::freezeId, 0.0f);                   step ("unfreeze", 1.0);
+            h.bothId (chl::timeModeId, 1.0f);                 step ("fade mode", 0.3);
+            for (int k = 0; k <= 10; ++k) { h.bothN (chl::time, (float) k / 10.0f); step ("note sweep in fade mode", 0.1); }
+            // (the bug of 1.2.0: a string held while a fade was crossfading between two reads of the same
+            //  line summed them back into itself: a loop gain above one, off to infinity, then silence)
+            h.bothId (chl::freezeId, 1.0f);
+            for (int k = 10; k >= 0; --k) { h.bothN (chl::time, (float) k / 10.0f); step ("frozen while the note moves in fade mode", 0.12); }
+            step ("frozen in fade mode, held", 2.0);
+            h.bothId (chl::freezeId, 0.0f); h.both (chl::rnd, 1.0f); step ("random freeze with the note moving in fade mode", 2.0);
+            h.both (chl::rnd, 0.0f);
+            h.bothId (chl::timeModeId, 0.0f); h.bothN (chl::time, 0.4f); step ("slew mode", 0.5);
+            for (int ty = 0; ty < 3; ++ty) { h.bothId (chl::delayTypeId, (float) ty); step ("engine change", 1.0); }
+            h.set (chl::orderId, 1.0f);                       step ("delay > filter", 1.0);
+            h.set (chl::orderId, 0.0f);                       step ("filter > delay", 0.6);
+            h.bothId (chl::tubeOnId, 1.0f); h.both (chl::drive, 1.0f); step ("tube full", 1.0);
+            h.both (chl::drive, 0.3f);
+            h.both (chl::res, 1.0f);
+            for (int k = 0; k <= 10; ++k) { h.both (chl::cutoff, 20.0f * std::pow (1000.0f, (float) k / 10.0f)); step ("resonant cutoff sweep", 0.1); }
+            h.both (chl::res, 0.15f); h.both (chl::cutoff, 20000.0f);
+            for (int k = 0; k < 6; ++k) { h.bothId (chl::ksId, k % 2 == 0 ? 0.0f : 1.0f); step ("karplus toggled", 0.15); }
+            h.bothId (chl::ksId, 1.0f);
+            h.set (chl::masterFbId, 0.9f);                    step ("master feedback 90%", 1.5);
+            h.set (chl::masterFbId, 0.0f);
+            h.kind = 1; h.both (chl::regen, 1.15f);           step ("long sine, regen 1.15, poly up", 4.0);
+            h.kind = 0; h.both (chl::regen, 0.4f);
+            h.bothId (chl::ksId, 0.0f);                       step ("karplus off again", 1.0);
+            char msg[400];
+            std::snprintf (msg, sizeof msg, "processor stress at %.0f Hz, blocks of %d: finite %s, peak %.2f (before the last line %.2f)%s%s%s", srate, blk, h.finite ? "yes" : "NO", h.peak, h.rawPeak,
+                           h.firstBad.isNotEmpty() ? (" (first bad: " + h.firstBad + ")").toRawUTF8() : "",
+                           h.peakAt.isNotEmpty() ? (" (over the ceiling: " + h.peakAt + ")").toRawUTF8() : "",
+                           quietAt.isNotEmpty() ? (" (went quiet: " + quietAt + ")").toRawUTF8() : "");
+            check (h.finite && h.peak <= ceiling && quietAt.isEmpty(), msg);
+        }
+        // and a host turning every knob at random (the same seed every time), hot input, with the
+        // Karplus switch flipped often: whatever it lands on, nothing goes non-finite or past the ceiling
+        for (auto [srate, blk, secs] : { std::tuple<double, int, double> { 48000.0, 256, 60.0 }, { 44100.0, 64, 30.0 } })
+        {
+            Host h (srate, blk);
+            juce::Random r (1);
+            juce::Array<juce::RangedAudioParameter*> prms;
+            for (auto* prm : h.p.getParameters()) if (auto* rp = dynamic_cast<juce::RangedAudioParameter*> (prm)) prms.add (rp);
+            double done = 0; int moves = 0;
+            while (done < secs)
+            {
+                auto* rp = prms[r.nextInt (prms.size())];
+                float v = r.nextFloat();
+                if (r.nextFloat() < 0.3f) v = r.nextBool() ? 1.0f : 0.0f;
+                if (r.nextFloat() < 0.15f) rp = h.p.apvts.getParameter (chl::ksId (r.nextInt (2)));
+                rp->setValueNotifyingHost (v);
+                ++moves;
+                const double d = 0.01 + 0.08 * r.nextDouble();
+                h.kind = r.nextFloat() < 0.1f ? 1 : 0;
+                h.run (d, (rp->getParameterID() + " = " + juce::String (v, 3)).toRawUTF8());
+                done += d;
+            }
+            char msg[400];
+            std::snprintf (msg, sizeof msg, "random automation at %.0f Hz, blocks of %d: %.0f s, %d moves, finite %s, peak %.2f (before the last line %.2f)%s%s", srate, blk, done, moves, h.finite ? "yes" : "NO", h.peak, h.rawPeak,
+                           h.firstBad.isNotEmpty() ? (" (first bad: " + h.firstBad + ")").toRawUTF8() : "",
+                           h.peakAt.isNotEmpty() ? (" (over the ceiling: " + h.peakAt + ")").toRawUTF8() : "");
+            check (h.finite && h.peak <= ceiling, msg);
+        }
+    }
+#endif
 
     std::printf (fails ? "\nOFFLINE TESTS FAILED (%d)\n" : "\nOFFLINE TESTS OK\n", fails);
     return fails;
