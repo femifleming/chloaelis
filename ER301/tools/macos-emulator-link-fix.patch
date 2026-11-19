@@ -1,0 +1,31 @@
+diff --git a/arch/darwin/hal/dynload.cpp b/arch/darwin/hal/dynload.cpp
+new file mode 100644
+index 0000000..fa4ce0e
+--- /dev/null
++++ b/arch/darwin/hal/dynload.cpp
+@@ -0,0 +1,25 @@
++// macOS emulator implementation of the crash-diagnostics module enumerator
++// (the upstream tree only has the Linux one, so the darwin emulator did not link).
++// Lists the main program as "kernel" and every loaded image with its load slide.
++#include <hal/modulemap.h>
++#include <mach-o/dyld.h>
++
++namespace od
++{
++  void enumerateModules(std::vector<ModuleInfo> &out)
++  {
++    out.clear();
++    const uint32_t n = _dyld_image_count();
++    for (uint32_t i = 0; i < n; i++)
++    {
++      const char *name = _dyld_get_image_name(i);
++      ModuleInfo m;
++      m.path = (i == 0 || name == nullptr) ? "kernel" : name;
++      m.textBase = (uintptr_t)_dyld_get_image_vmaddr_slide(i);
++      m.textSize = 0;
++      m.dataBase = 0;
++      m.dataSize = 0;
++      out.push_back(m);
++    }
++  }
++}

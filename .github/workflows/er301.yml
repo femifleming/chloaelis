@@ -1,0 +1,77 @@
+name: er-301
+
+# The Chloaelis units for the ER-301: offline DSP tests, then the package for the module, built
+# with the compiler and SWIG the stolmine firmware is built with, and checked (stack on the
+# audio thread, alignment, imports). The .pkg is kept as a build artefact and, on an er301-v* tag,
+# attached to that release.
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'er301-v*' ]
+    paths: [ 'ER301/**', '.github/workflows/er301.yml' ]
+  pull_request:
+    paths: [ 'ER301/**', '.github/workflows/er301.yml' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ER301
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libc6-i386 lib32stdc++6 lib32z1 zip autoconf automake bison libpcre2-dev
+
+      - name: Offline DSP tests
+        run: make test
+
+      - uses: actions/cache@v4
+        id: tools
+        with:
+          path: |
+            ~/ti/gcc-arm-none-eabi-4_9-2015q3
+            ~/.local/swig-4.2.1
+          key: er301-tools-gcc49-2015q3-swig421
+
+      - name: Module compiler and SWIG (as the firmware uses them)
+        if: steps.tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/ti && cd ~/ti
+          curl -fsSL -o gcc.tar.bz2 https://launchpad.net/gcc-arm-embedded/4.9/4.9-2015-q3-update/+download/gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2
+          tar xjf gcc.tar.bz2 && rm gcc.tar.bz2
+          cd "$RUNNER_TEMP"
+          curl -fsSL -o swig.tar.gz https://github.com/swig/swig/archive/refs/tags/v4.2.1.tar.gz
+          tar xzf swig.tar.gz && cd swig-4.2.1
+          ./autogen.sh && ./configure --prefix="$HOME/.local/swig-4.2.1" --without-alllang --with-lua >/dev/null
+          make -j4 >/dev/null && make install >/dev/null
+
+      - name: Firmware headers (stolmine 0.7.0-stolmine.9.7.0)
+        run: tools/fetch-firmware.sh release
+
+      - name: Package for the module
+        run: |
+          ~/ti/gcc-arm-none-eabi-4_9-2015q3/bin/arm-none-eabi-gcc --version | head -1
+          make chloaelis ARCH=am335x SDKPATH=er-301-release PROFILE=release -j4
+          tools/check-package.py release/am335x chloaelis
+          unzip -l release/am335x/chloaelis-*.pkg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chloaelis-er301
+          path: ER301/release/am335x/chloaelis-*.pkg
+
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/er301-v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in 1 2 3 4 5 6 7 8 9 10; do gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 && break; sleep 30; done
+          gh release upload "$GITHUB_REF_NAME" release/am335x/chloaelis-*.pkg --clobber

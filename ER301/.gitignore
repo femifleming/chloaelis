@@ -1,0 +1,27 @@
+# The ER-301 firmware (fetched by tools/fetch-firmware.sh) and everything built
+er-301/
+er-301-release/
+testing/
+release/
+debug/
+build/
+dist/
+tools/gcc-shim/
+docs/*.html
+__pycache__/
+*.pyc
+
+# Not part of this repository: the Aeria screensavers for the ER-301 (kept locally), and two
+# check scripts from another project that the package no longer uses (tools/check-package.py
+# does their job)
+mods/aeria/
+firmware-aeria/
+tests/aeria_sheet.c
+tests/emu/4*-aeria*.test
+docs/Aeria-ER301-Manual.*
+docs/make_manuals.py
+docs/img/aeria-*.png
+docs/img/saver-*.png
+docs/img/unit-aeria.png
+tools/check-audio-stack.sh
+tools/check-neon-hints.sh

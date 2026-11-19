@@ -1,0 +1,11 @@
+# Every Chloaelis unit loads into a chain, shows its controls and survives a few hundred frames.
+!packages core
+!packages chloaelis
+
+frames 20
+lua (function() local M=require('Package.Manager') local out={} for id,p in pairs(M.getPackages()) do out[#out+1]=id..':'..tostring(p.installed) end return table.concat(out,' ') end)()
+lua (function() local M=require('Package.Manager') local p=M.getPackage('chloaelis-1.1.0') if p and not p.installed then M.install(p) end return p and tostring(p.installed) or 'nopkg' end)()
+frames 20
+lua (function() local F=require('Unit.Factory') local t=F.getUnitsByLibrary('chloaelis') local n={} for _,u in ipairs(t or {}) do n[#n+1]=u.moduleName end return table.concat(n,',') end)()
+!expect PT2399,BBD,TapeLoop,Tube,Filter,Lorenz,Flock,String
+quit

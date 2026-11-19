@@ -1,0 +1,43 @@
+# A patch: a stock oscillator and filter, then every Chloaelis unit, then a stock delay and limiter,
+# all running in one chain for a while.
+!packages core
+!packages chloaelis
+
+frames 20
+lua (function() local M=require('Package.Manager') for id,p in pairs(M.getPackages()) do if not p.installed then M.install(p) end end return 'ok' end)()
+frames 10
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('core')) do if u.moduleName=='Sine Osc' or u.title=='Sine Osc' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('core')) do if u.moduleName=='Ladder LPF' or u.title=='Ladder LPF' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='Filter' or u.title=='Filter' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='Tube' or u.title=='Tube' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='PT2399' or u.title=='PT2399' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='BBD' or u.title=='BBD' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='TapeLoop' or u.title=='TapeLoop' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='String' or u.title=='String' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('core')) do if u.moduleName=='Delay' or u.title=='Delay' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('core')) do if u.moduleName=='Limiter' or u.title=='Limiter' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 20
+frames 600
+lua (function() local c=require('Channels').getChain(1) local out={} for i=1,c:length() do out[#out+1]=c:getUnit(i).title end return c:length()..': '..table.concat(out,', ') end)()
+!expect ^ok 10: 
+cap @SHOTS@/patch.png
+quit

@@ -33,6 +33,7 @@ and two field recordings built in. Plug-in (AU / VST3 / LV2) and desktop app, fo
   - [The desktop app](#the-desktop-app)
   - [Help inside the app](#help-inside-the-app)
 - [Build from source](#build-from-source)
+- [ER-301](#er-301)
 - [Human contributions](#human-contributions)
 - [Credits and licence](#credits-and-licence)
 
@@ -325,6 +326,33 @@ If you cloned without `--recursive`, run `git submodule update --init` to fetch 
 Tests (macOS): `cmake -B build -DCHLOAELIS_BUILD_TESTS=ON` builds `ChloaelisTest` (offline
 DSP checks) and `ChloaelisHostTest` (the full plug-in, headless; `CHL_AUDIOTEST=1` runs the
 audio checks).
+
+---
+
+## ER-301
+
+The [`ER301`](ER301) folder has Chloaelis as eight units for the Orthogonal Devices
+**ER-301** sound computer on the [stolmine firmware](https://github.com/stolmine/er-301-stolmine)
+(0.7.0-stolmine.9.7.0): PT2399 Delay, BBD Delay, Tape Loop, Tube, Cell Filter, Lorenz, Flock and
+Scale String (a Karplus-Strong string tuned to the `.scl` files in the card's `ER-301/scales`
+folder). Each parameter is an ordinary ER-301 fader with a CV sub-chain; every unit works in
+mono and stereo chains.
+
+**Install:** download `chloaelis-1.1.0.pkg` from the
+[er301-v1.1.0 release](https://github.com/femifleming/chloaelis/releases/tag/er301-v1.1.0), copy it to `ER-301/packages` on
+the front SD card and install it in the Package Manager. Manual:
+[ER301/docs/Chloaelis-ER301-Manual.pdf](ER301/docs/Chloaelis-ER301-Manual.pdf).
+
+**Processor load** (estimated, 128-sample frames at 48 kHz): 0.2 to about 3% for each unit at its
+defaults, mono or stereo (stock ER-301 units of similar kinds: 1 to 3%), and about 11% for the
+dearest setting (Tube with the 6L6 at 4x). A four-channel patch of 14 units, six of them
+Chloaelis, comes to about a quarter of the processor; the firmware reports dropouts from about
+80%. These figures come from a model of the module's Cortex-A8 checked against published
+readings from real modules, not from a module: see [ER301/README.md](ER301/README.md) for the
+table, the method and its uncertainty.
+
+**Not yet run on a physical ER-301.** It is built with the firmware's own compiler and tested in
+the ER-301 emulator and offline; the first install on a module is its first hardware test.
 
 ---
 

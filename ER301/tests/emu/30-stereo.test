@@ -1,0 +1,43 @@
+# Every unit in a stereo chain (channels 1+2 linked): each is one object working both channels.
+!packages core
+!packages chloaelis
+
+frames 20
+lua (function() local M=require('Package.Manager') for id,p in pairs(M.getPackages()) do if not p.installed then M.install(p) end end return 'ok' end)()
+frames 10
+lua (function() local C=require('Channels') local ok=C.link(1) return 'linked '..tostring(ok)..' mono='..tostring(C.isMono(1)) end)()
+!expect linked true mono=false
+frames 10
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('builtins')) do if u.moduleName=='Test Osc' or u.title=='Test Osc' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='PT2399' or u.title=='PT2399' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 30
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='BBD' or u.title=='BBD' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 30
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='TapeLoop' or u.title=='TapeLoop' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 30
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='Tube' or u.title=='Tube' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 30
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='Filter' or u.title=='Filter' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 30
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='Lorenz' or u.title=='Lorenz' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 30
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='Flock' or u.title=='Flock' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 30
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='String' or u.title=='String' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 30
+frames 300
+lua (function() local c=require('Channels').getChain(1) local out={} for i=1,c:length() do local u=c:getUnit(i) out[#out+1]=u.title..':'..tostring(u.channelCount) end return table.concat(out,' ') end)()
+!expect Scale String #1:2 Flock #1:2 Lorenz #1:2 Cell Filter #1:2 Tube #1:2 Tape Loop #1:2 BBD Delay #1:2 PT2399 Delay #1:2 Test Osc
+lua (function() local c=require('Channels').getChain(1) local u=c:getUnit(8) local op=u.op return tostring(op:getInput('Right In') ~= nil)..' '..tostring(op:getOutput('Right Out') ~= nil) end)()
+!expect true true
+cap @SHOTS@/stereo-chain.png
+quit

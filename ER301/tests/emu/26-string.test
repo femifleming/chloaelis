@@ -1,0 +1,16 @@
+# String: load it after a test oscillator, let it run, check its controls exist, take a picture.
+!packages core
+!packages chloaelis
+
+frames 20
+lua (function() local M=require('Package.Manager') for id,p in pairs(M.getPackages()) do if not p.installed then M.install(p) end end return 'ok' end)()
+frames 10
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) for _,u in ipairs(F.getUnitsByLibrary('builtins')) do if (u.title or u.moduleName)=='Test Osc' then c:loadUnit(u) end end return 'ok' end)()
+frames 10
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok,err='notfound',nil for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName=='String' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 150
+lua (function() local c=require('Channels').getChain(1) local u=c:getUnit(2) if not u then return 'nounit' end local n=0 for k,v in pairs(u.controls) do n=n+1 end return u.title..' controls='..n end)()
+!expect controls=
+cap @SHOTS@/String.png
+quit

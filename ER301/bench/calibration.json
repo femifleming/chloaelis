@@ -1,0 +1,9 @@
+{
+ "scale": 1.1042,
+ "uncertainty_low": 0.828,
+ "uncertainty_high": 1.219,
+ "worst_low": 0.663,
+ "worst_high": 1.69,
+ "anchors": 18,
+ "note": "scale = 1 / geometric mean of model/reading over all anchors, FPSCR=0 model; uncertainty = spread of the anchors after scaling without the most extreme one on each side; worst = with them"
+}

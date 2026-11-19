@@ -207,6 +207,13 @@ Every request typed while this was being designed and built with Claude Code, in
 1. "for every single app and vst on my github, just make the app logo icon extremely minimal, a letter from this font [Septambres Neau] in some color, on some color background, update all the app icons." (New app icons: one Septambres Neau glyph, one colour on one colour.)
 
 
+## 2026-11-12 (ER-301)
+
+> here is the repo for custom er301 sound computer units thast people are making. https://github.com/stolmine/er-301-habitat are there any effects or synths that you have helped me build of that we have talked about that will run well on the er301 ad an effects or synths, and could you help me build those? here are more references https://github.com/tmfset/er-301-custom-units, https://github.com/yrn1/er-301-custom-units
+
+> stolmine is the firmware, just do all of the seperate units of chloealis. for the sales read the .scl files from the scales folder that will be on my er301
+
+
 ## 2026-11-15
 
 > with the new karplus strong alg on chloealis the output is clipping so much to the point of distorting and glitching.
@@ -220,3 +227,8 @@ Every request typed while this was being designed and built with Claude Code, in
 > chloealis still clipped out and then completley shut off audio when i swiotched it into karplus strong mode
 
 > check vsts and desktop apps
+
+
+## 2026-11-17
+
+> also if you have completed chloeaslid for the er301, add it to the chloealis repo. make sure it works with a reasonable amount of cpu for the er301, i want to be able to use it with other units also loaded.
