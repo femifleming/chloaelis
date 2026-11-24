@@ -11,7 +11,7 @@ Manual: [docs/Chloaelis-ER301-Manual.pdf](docs/Chloaelis-ER301-Manual.pdf).
 
 ## Status
 
-Package version 1.1.1, built for the module against release 0.7.0-stolmine.9.7.0 with the
+Package version 1.1.2, built for the module against release 0.7.0-stolmine.9.7.0 with the
 firmware's own compiler and SWIG. In the ER-301 emulator on macOS every unit loads and runs in a
 mono and a stereo chain, the state that goes beyond faders (Tape Loop's wear, Scale String's
 scale) survives being saved and given to a new unit, and six of the units run in one chain with
@@ -23,14 +23,15 @@ try first on a module.
 
 ## Install
 
-Download `chloaelis-1.1.1.pkg` from the
-[er301-v1.1.1 release](https://github.com/femifleming/chloaelis/releases/tag/er301-v1.1.1) (or build it, below), copy it to
+Download `chloaelis-1.1.2.pkg` from the
+[er301-v1.1.2 release](https://github.com/femifleming/chloaelis/releases/tag/er301-v1.1.2) (or build it, below), copy it to
 `ER-301/packages` on the front SD card, and install it in the admin screen's Package Manager.
 The units appear under **Chloaelis**. The package only works with the firmware it was built
 for; it changes nothing in the firmware and uninstalls cleanly.
 
 ## Changes
 
+- **1.1.2:** Tape Loop keeps its tape's wear when a patch is loaded while it is running (before, a load landing in the middle of an audio block could be overwritten by the running tape and come back fresh).
 - **1.1.1:** Chloaelis' class names no longer clash with the ER-301's own Delay unit; the stock
   Delay works whatever order units are created in. (The firmware keeps one table of classes for
   all packages, and in 1.1.0 a PT2399, BBD or Tape Loop created before any core unit took the
@@ -126,7 +127,7 @@ The firmware and its packages are built with `gcc-arm-none-eabi-4_9-2015q3` in `
 `.github/workflows/er301.yml` shows how to install both on Linux).
 
     tools/fetch-firmware.sh release                                 # the firmware headers, pinned
-    make chloaelis ARCH=am335x SDKPATH=er-301-release PROFILE=release   # -> release/am335x/chloaelis-1.1.1.pkg
+    make chloaelis ARCH=am335x SDKPATH=er-301-release PROFILE=release   # -> release/am335x/chloaelis-1.1.2.pkg
     tools/check-package.py release/am335x chloaelis
     make test                                                        # offline DSP tests (any C++ compiler)
 
@@ -140,7 +141,7 @@ Needs Homebrew `gcc sdl2 sdl2_ttf fftw swig zip`.
     tools/fetch-firmware.sh emu   # er-301/ (stolmine), with a small link fix for macOS
     tools/fw-make.sh emu          # the emulator
     tools/fw-make.sh core         # the core units it needs
-    tools/pkg-make.sh chloaelis   # -> testing/darwin/chloaelis-1.1.1.pkg
+    tools/pkg-make.sh chloaelis   # -> testing/darwin/chloaelis-1.1.2.pkg
     tools/emu-test.sh             # loads every unit in the headless emulator, takes screenshots
     python3 docs/make_manual.py   # the PDF (needs Pillow, Chrome, and a benchmark run)
 

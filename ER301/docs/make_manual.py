@@ -88,7 +88,7 @@ CH = f"""<!doctype html><html><head><meta charset="utf-8"><title>Chloaelis for t
 <div class="cover">
   <div><h1>Chloaelis<br>for the ER-301</h1>
   <p class="sub">Eight units for the Orthogonal Devices ER-301 sound computer, taken from the Chloaelis plug-in: three delays, a tube, a filter, two control sources (a chaotic one and a flock) and a string tuned to your own scales.</p></div>
-  <div><img src="img/TapeLoop.png"><p class="small" style="margin-top:3mm">Tape Loop in the ER-301 emulator. Manual for package version 1.1.1, stolmine firmware. sadnoise, November 2026.</p></div>
+  <div><img src="img/TapeLoop.png"><p class="small" style="margin-top:3mm">Tape Loop in the ER-301 emulator. Manual for package version 1.1.2, stolmine firmware. sadnoise, November 2026.</p></div>
 </div>
 
 <h2>Contents</h2>
@@ -119,7 +119,7 @@ of its own that you place, order and modulate like any other:</p>
 
 <h2>2. Installing</h2>
 <ol>
-<li>Copy <span class="k">chloaelis-1.1.1.pkg</span> to the <span class="k">ER-301/packages</span> folder of the front SD card.</li>
+<li>Copy <span class="k">chloaelis-1.1.2.pkg</span> to the <span class="k">ER-301/packages</span> folder of the front SD card.</li>
 <li>On the module open the admin screen, go to the Package Manager, select <b>chloaelis</b> and install it.</li>
 <li>The units appear in the unit chooser under the category <b>Chloaelis</b>.</li>
 </ol>
@@ -128,6 +128,7 @@ of its own that you place, order and modulate like any other:</p>
 It changes nothing in the firmware and shares nothing with other packages: uninstalling it in the Package Manager
 removes it completely.</p>
 <p>The Scale String needs the <b>core</b> package, which every ER-301 already has installed.</p>
+<p><b>1.1.2:</b> Tape Loop keeps its tape's wear when a patch is loaded while it is running.</p>
 <p><b>1.1.1:</b> Chloaelis' class names no longer clash with the ER-301's own Delay unit; the stock Delay works
 whatever order units are created in. (With 1.1.0, a PT2399, BBD or Tape Loop created before any of the firmware's
 own units could leave the stock Delay unable to load.) Patches and presets saved with 1.1.0 load unchanged.</p>

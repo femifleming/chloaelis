@@ -236,3 +236,5 @@ Every request typed while this was being designed and built with Claude Code, in
 ## 2026-11-24 (ER-301 1.1.1)
 
 > fix those bugs here and on the github for chloalis standlone release as well.
+
+> (2026-11-24) bug found while merging sürialeuis 2.0: Tape Loop could lose its saved wear if a patch loaded mid-block; fixed in 1.1.2 under "fix those bugs here and on the github for chloalis standlone release as well."

@@ -54,10 +54,10 @@ namespace chloaelis
 #ifndef SWIGLUA
     virtual void process()
     {
+      const float saved = mRunAge.value();
       if (mKind == 2)
       {
         // a state that was just loaded brings its tape with it
-        const float saved = mRunAge.value();
         if (saved != mLastRunAge)
           eng::delaySetRunAge(mpEngine, saved);
       }
@@ -79,8 +79,13 @@ namespace chloaelis
       eng::delayRun(mpEngine);
       if (mKind == 2)
       {
-        mLastRunAge = eng::delayRunAge(mpEngine);
-        mRunAge.hardSet(mLastRunAge);
+        // write the tape's wear back only if nothing set it during this block (a state being
+        // loaded from the UI thread); otherwise the new value is picked up next block
+        if (mRunAge.value() == saved)
+        {
+          mLastRunAge = eng::delayRunAge(mpEngine);
+          mRunAge.hardSet(mLastRunAge);
+        }
       }
     }
     void view(eng::DelayView *v) { eng::delayView(mpEngine, v); }
