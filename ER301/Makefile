@@ -19,11 +19,13 @@ $(addsuffix -install,$(PROJECTS)):
 check:
 	tools/check-package.py testing/am335x chloaelis
 
-test:
+test: test-chloaelis
+
+test-chloaelis:
 	@mkdir -p build
 	c++ -std=c++11 -O2 -Wall -Wno-unused-function -I mods/chloaelis -I tests/ref tests/test.cpp -o build/chloe_test
 	build/chloe_test
 
 clean: $(addsuffix -clean,$(PROJECTS))
 
-.PHONY: all clean test check $(PROJECTS)
+.PHONY: all clean test test-chloaelis check $(PROJECTS)

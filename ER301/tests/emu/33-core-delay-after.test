@@ -1,0 +1,23 @@
+# Regression (1.1.1): Chloaelis' three delays created BEFORE anything from the core library, then
+# the stock Delay. SWIG keeps one class table for every package, keyed by the bare class name, and
+# the first registration wins: in 1.1.0 Chloaelis' C++ class "Delay" took core's place and the
+# stock Delay failed to build ("attempt to call a nil value (method 'allocateTimeUpTo')").
+!packages core
+!packages chloaelis
+
+frames 20
+lua (function() local M=require('Package.Manager') for id,p in pairs(M.getPackages()) do if not p.installed then M.install(p) end end return 'ok' end)()
+frames 10
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local n=0 for _,m in ipairs({'PT2399','BBD','TapeLoop'}) do for _,u in ipairs(F.getUnitsByLibrary('chloaelis')) do if u.moduleName==m then local s,e=pcall(function() c:loadUnit(u) end) if not s then return 'ERR '..m..' '..tostring(e) end n=n+1 end end end return 'loaded '..n end)()
+!expect loaded 3
+frames 60
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('core')) do if u.title=='Delay' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect loaded
+frames 60
+lua (function() local c=require('Channels').getChain(1) local u for i=1,c:length() do local x=c:getUnit(i) if x.loadInfo.libraryName=='core' then u=x end end if not u or not u.objects or not u.objects.delay then return 'nodelay '..tostring(u and u.title) end local s,a=pcall(function() return u.objects.delay:allocateTimeUpTo(2.0) end) if not s then return 'ERR '..tostring(a) end return string.format('alloc %.1f units=%d', a, c:length()) end)()
+!expect ^ok alloc 2\.0 units=4
+lua (function() local c=require('Channels').getChain(1) local out={} for i=1,c:length() do local u=c:getUnit(i) out[#out+1]=u.loadInfo.libraryName..'/'..u.loadInfo.moduleName end table.sort(out) return table.concat(out,', ') end)()
+!expect ^ok chloaelis/BBD, chloaelis/PT2399, chloaelis/TapeLoop, core/Delay.DelayUnit$
+frames 300
+cap @SHOTS@/core-delay-after.png
+quit

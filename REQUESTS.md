@@ -232,3 +232,7 @@ Every request typed while this was being designed and built with Claude Code, in
 ## 2026-11-17
 
 > also if you have completed chloeaslid for the er301, add it to the chloealis repo. make sure it works with a reasonable amount of cpu for the er301, i want to be able to use it with other units also loaded.
+
+## 2026-11-24 (ER-301 1.1.1)
+
+> fix those bugs here and on the github for chloalis standlone release as well.

@@ -1,5 +1,5 @@
 PKGNAME ?= chloaelis
-PKGVERSION ?= 1.1.0
+PKGVERSION ?= 1.1.1
 
 include scripts/env.mk
 

@@ -1,0 +1,617 @@
+local shared = {
+
+} -- shared
+local obj1 = {
+	["units"] = {
+		[1] = {
+			["controls"] = {
+				["wet"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["time"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["regen"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+			};
+			["controlBranches"] = {
+			};
+			["controlOrder"] = {
+				[1] = "cells";
+				[2] = "time";
+				[3] = "regen";
+				[4] = "wet";
+				[5] = "freeze";
+				[6] = "mode";
+				[7] = "hpf";
+			};
+			["activeView"] = "expanded";
+			["instanceKey"] = "b50e363e";
+			["objects"] = {
+				["op1"] = {
+					["params"] = {
+						["Run Age"] = 0.0;
+					};
+					["options"] = {
+						["Time Mode"] = 1;
+						["Feedback HPF"] = 2;
+					};
+				};
+				["freeze"] = {
+					["params"] = {
+						["Threshold"] = 0.1;
+					};
+					["options"] = {
+						["State"] = 0;
+					};
+				};
+				["time"] = {
+					["params"] = {
+						["Bias"] = 0.25;
+						["Gain"] = 0.0;
+					};
+				};
+				["wet"] = {
+					["params"] = {
+						["Bias"] = 0.35;
+						["Gain"] = 0.0;
+					};
+				};
+				["regen"] = {
+					["params"] = {
+						["Bias"] = 0.4;
+						["Gain"] = 0.0;
+					};
+				};
+			};
+			["loadInfo"] = {
+				["moduleName"] = "PT2399";
+				["libraryName"] = "chloaelis";
+				["title"] = "PT2399 Delay";
+				["id"] = "PT2399";
+				["keywords"] = "delay, echo, chip, lofi, pt2399, freeze, effect";
+				["category"] = "Chloaelis";
+			};
+			["branches"] = {
+			};
+			["firmwareVersion"] = "0.7.0-stolmine.9.7.0";
+			["unitVersion"] = 1;
+			["bypass"] = false;
+		};
+		[2] = {
+			["controls"] = {
+				["wet"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["time"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["regen"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+			};
+			["controlBranches"] = {
+			};
+			["controlOrder"] = {
+				[1] = "cells";
+				[2] = "time";
+				[3] = "regen";
+				[4] = "wet";
+				[5] = "freeze";
+				[6] = "mode";
+				[7] = "hpf";
+			};
+			["activeView"] = "expanded";
+			["instanceKey"] = "5ee4b936";
+			["objects"] = {
+				["op1"] = {
+					["params"] = {
+						["Run Age"] = 0.0;
+					};
+					["options"] = {
+						["Time Mode"] = 1;
+						["Feedback HPF"] = 2;
+					};
+				};
+				["freeze"] = {
+					["params"] = {
+						["Threshold"] = 0.1;
+					};
+					["options"] = {
+						["State"] = 0;
+					};
+				};
+				["time"] = {
+					["params"] = {
+						["Bias"] = 0.33;
+						["Gain"] = 0.0;
+					};
+				};
+				["wet"] = {
+					["params"] = {
+						["Bias"] = 0.35;
+						["Gain"] = 0.0;
+					};
+				};
+				["regen"] = {
+					["params"] = {
+						["Bias"] = 0.4;
+						["Gain"] = 0.0;
+					};
+				};
+			};
+			["loadInfo"] = {
+				["moduleName"] = "BBD";
+				["libraryName"] = "chloaelis";
+				["title"] = "BBD Delay";
+				["id"] = "BBD";
+				["keywords"] = "delay, echo, bucket brigade, analog, bbd, freeze, effect";
+				["category"] = "Chloaelis";
+			};
+			["branches"] = {
+			};
+			["firmwareVersion"] = "0.7.0-stolmine.9.7.0";
+			["unitVersion"] = 1;
+			["bypass"] = false;
+		};
+		[3] = {
+			["controls"] = {
+				["time"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["regen"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["wet"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["age"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+			};
+			["controlBranches"] = {
+			};
+			["controlOrder"] = {
+				[1] = "cells";
+				[2] = "time";
+				[3] = "regen";
+				[4] = "wet";
+				[5] = "freeze";
+				[6] = "age";
+				[7] = "refresh";
+				[8] = "ageing";
+				[9] = "mode";
+				[10] = "hpf";
+			};
+			["activeView"] = "expanded";
+			["instanceKey"] = "b227ccc4";
+			["objects"] = {
+				["op1"] = {
+					["params"] = {
+						["Run Age"] = 0.5010371;
+					};
+					["options"] = {
+						["Ageing"] = 1;
+						["Time Mode"] = 1;
+						["Feedback HPF"] = 2;
+					};
+				};
+				["refresh"] = {
+					["params"] = {
+						["Threshold"] = 0.1;
+					};
+					["options"] = {
+						["State"] = 0;
+					};
+				};
+				["freeze"] = {
+					["params"] = {
+						["Threshold"] = 0.1;
+					};
+					["options"] = {
+						["State"] = 0;
+					};
+				};
+				["time"] = {
+					["params"] = {
+						["Bias"] = 0.75;
+						["Gain"] = 0.0;
+					};
+				};
+				["wet"] = {
+					["params"] = {
+						["Bias"] = 0.35;
+						["Gain"] = 0.0;
+					};
+				};
+				["regen"] = {
+					["params"] = {
+						["Bias"] = 0.4;
+						["Gain"] = 0.0;
+					};
+				};
+				["age"] = {
+					["params"] = {
+						["Bias"] = 0.0;
+						["Gain"] = 0.0;
+					};
+				};
+			};
+			["loadInfo"] = {
+				["moduleName"] = "TapeLoop";
+				["libraryName"] = "chloaelis";
+				["title"] = "Tape Loop";
+				["id"] = "TapeLoop";
+				["keywords"] = "delay, echo, tape, wow, flutter, hiss, decay, freeze, effect";
+				["category"] = "Chloaelis";
+			};
+			["branches"] = {
+			};
+			["firmwareVersion"] = "0.7.0-stolmine.9.7.0";
+			["unitVersion"] = 1;
+			["bypass"] = false;
+		};
+		[4] = {
+			["controls"] = {
+				["valve"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["drive"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+			};
+			["controlBranches"] = {
+			};
+			["controlOrder"] = {
+				[1] = "cells";
+				[2] = "drive";
+				[3] = "valve";
+				[4] = "quality";
+			};
+			["activeView"] = "expanded";
+			["instanceKey"] = "0c6b2568";
+			["objects"] = {
+				["op1"] = {
+					["options"] = {
+						["Oversampling"] = 1;
+					};
+				};
+				["drive"] = {
+					["params"] = {
+						["Bias"] = 0.3;
+						["Gain"] = 0.0;
+					};
+				};
+				["valve"] = {
+					["params"] = {
+						["Bias"] = 1.0;
+						["Gain"] = 0.0;
+					};
+				};
+			};
+			["loadInfo"] = {
+				["moduleName"] = "Tube";
+				["libraryName"] = "chloaelis";
+				["title"] = "Tube";
+				["id"] = "Tube";
+				["keywords"] = "tube, valve, distortion, saturation, drive, 12ax7, effect";
+				["category"] = "Chloaelis";
+			};
+			["branches"] = {
+			};
+			["firmwareVersion"] = "0.7.0-stolmine.9.7.0";
+			["unitVersion"] = 1;
+			["bypass"] = false;
+		};
+		[5] = {
+			["controls"] = {
+				["freq"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["tune"] = {
+					["gainEncoderState"] = "Neutral";
+				};
+				["morph"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["res"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+			};
+			["controlBranches"] = {
+			};
+			["controlOrder"] = {
+				[1] = "cells";
+				[2] = "tune";
+				[3] = "freq";
+				[4] = "res";
+				[5] = "morph";
+			};
+			["activeView"] = "expanded";
+			["instanceKey"] = "0fc89249";
+			["objects"] = {
+				["morph"] = {
+					["params"] = {
+						["Bias"] = 0.0;
+						["Gain"] = 0.0;
+					};
+				};
+				["tune"] = {
+					["params"] = {
+						["Offset"] = 0.0;
+					};
+				};
+				["f0"] = {
+					["params"] = {
+						["Bias"] = 1760.0;
+						["Gain"] = 0.0;
+					};
+				};
+				["res"] = {
+					["params"] = {
+						["Bias"] = 0.15;
+						["Gain"] = 0.0;
+					};
+				};
+			};
+			["loadInfo"] = {
+				["moduleName"] = "Filter";
+				["libraryName"] = "chloaelis";
+				["title"] = "Cell Filter";
+				["id"] = "Filter";
+				["keywords"] = "filter, multimode, morph, lowpass, bandpass, highpass, notch";
+				["category"] = "Chloaelis";
+			};
+			["branches"] = {
+			};
+			["firmwareVersion"] = "0.7.0-stolmine.9.7.0";
+			["unitVersion"] = 1;
+			["bypass"] = false;
+		};
+		[6] = {
+			["controls"] = {
+				["speed"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["level"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["chaos"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["shape"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+			};
+			["controlBranches"] = {
+			};
+			["controlOrder"] = {
+				[1] = "cells";
+				[2] = "speed";
+				[3] = "chaos";
+				[4] = "shape";
+				[5] = "level";
+				[6] = "axis";
+			};
+			["activeView"] = "expanded";
+			["instanceKey"] = "f7309680";
+			["objects"] = {
+				["op1"] = {
+					["options"] = {
+						["Axis"] = 1;
+					};
+				};
+				["chaos"] = {
+					["params"] = {
+						["Bias"] = 0.3;
+						["Gain"] = 0.0;
+					};
+				};
+				["level"] = {
+					["params"] = {
+						["Bias"] = 0.5;
+						["Gain"] = 0.0;
+					};
+				};
+				["speed"] = {
+					["params"] = {
+						["Bias"] = 0.35;
+						["Gain"] = 0.0;
+					};
+				};
+				["shape"] = {
+					["params"] = {
+						["Bias"] = 2.666667;
+						["Gain"] = 0.0;
+					};
+				};
+			};
+			["loadInfo"] = {
+				["moduleName"] = "Lorenz";
+				["libraryName"] = "chloaelis";
+				["title"] = "Lorenz";
+				["id"] = "Lorenz";
+				["keywords"] = "chaos, lorenz, attractor, random, lfo, modulation, cv";
+				["category"] = "Chloaelis";
+			};
+			["branches"] = {
+			};
+			["firmwareVersion"] = "0.7.0-stolmine.9.7.0";
+			["unitVersion"] = 1;
+			["bypass"] = false;
+		};
+		[7] = {
+			["controls"] = {
+				["boid"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["level"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+			};
+			["controlBranches"] = {
+			};
+			["controlOrder"] = {
+				[1] = "cells";
+				[2] = "boid";
+				[3] = "level";
+				[4] = "axis";
+			};
+			["activeView"] = "expanded";
+			["instanceKey"] = "d725e033";
+			["objects"] = {
+				["op1"] = {
+					["options"] = {
+						["Axis"] = 1;
+					};
+				};
+				["level"] = {
+					["params"] = {
+						["Bias"] = 0.5;
+						["Gain"] = 0.0;
+					};
+				};
+				["boid"] = {
+					["params"] = {
+						["Bias"] = 1.0;
+						["Gain"] = 0.0;
+					};
+				};
+			};
+			["loadInfo"] = {
+				["moduleName"] = "Flock";
+				["libraryName"] = "chloaelis";
+				["title"] = "Flock";
+				["id"] = "Flock";
+				["keywords"] = "flock, boids, swarm, random, lfo, modulation, cv";
+				["category"] = "Chloaelis";
+			};
+			["branches"] = {
+			};
+			["firmwareVersion"] = "0.7.0-stolmine.9.7.0";
+			["unitVersion"] = 1;
+			["bypass"] = false;
+		};
+		[8] = {
+			["controls"] = {
+				["f0"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["sustain"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["wet"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+				["tune"] = {
+					["gainEncoderState"] = "Neutral";
+				};
+				["scale"] = {
+					["selectedScale"] = "12-TET";
+				};
+				["poly"] = {
+					["gainEncoderState"] = "Coarse";
+				};
+			};
+			["controlBranches"] = {
+			};
+			["controlOrder"] = {
+				[1] = "cells";
+				[2] = "tune";
+				[3] = "scale";
+				[4] = "f0";
+				[5] = "sustain";
+				[6] = "poly";
+				[7] = "wet";
+				[8] = "freeze";
+				[9] = "damp";
+				[10] = "glide";
+				[11] = "hpf";
+			};
+			["activeView"] = "expanded";
+			["instanceKey"] = "964a1183";
+			["objects"] = {
+				["op1"] = {
+					["options"] = {
+						["Damping"] = 3;
+						["Time Mode"] = 1;
+						["Feedback HPF"] = 2;
+					};
+				};
+				["f0"] = {
+					["params"] = {
+						["Bias"] = 110.0;
+						["Gain"] = 0.0;
+					};
+				};
+				["sustain"] = {
+					["params"] = {
+						["Bias"] = 1.05;
+						["Gain"] = 0.0;
+					};
+				};
+				["tune"] = {
+					["params"] = {
+						["Offset"] = 0.0;
+					};
+				};
+				["wet"] = {
+					["params"] = {
+						["Bias"] = 1.0;
+						["Gain"] = 0.0;
+					};
+				};
+				["poly"] = {
+					["params"] = {
+						["Bias"] = 0.0;
+						["Gain"] = 0.0;
+					};
+				};
+				["freeze"] = {
+					["params"] = {
+						["Threshold"] = 0.1;
+					};
+					["options"] = {
+						["State"] = 0;
+					};
+				};
+			};
+			["loadInfo"] = {
+				["moduleName"] = "String";
+				["libraryName"] = "chloaelis";
+				["title"] = "Scale String";
+				["id"] = "String";
+				["keywords"] = "string, karplus, resonator, pluck, scale, scala, microtonal, chord";
+				["category"] = "Chloaelis";
+			};
+			["branches"] = {
+			};
+			["firmwareVersion"] = "0.7.0-stolmine.9.7.0";
+			["unitVersion"] = 1;
+			["bypass"] = false;
+		};
+	};
+	["firmwareVersion"] = "0.7.0-stolmine.9.7.0";
+	["selection"] = {
+		["view"] = "default";
+		["section"] = 0;
+		["spot"] = 0;
+	};
+	["pinView"] = {
+		["selection"] = {
+			["view"] = "default";
+			["section"] = 0;
+			["spot"] = 0;
+		};
+		["pinSets"] = {
+		};
+	};
+	["channels"] = {
+		["count"] = 1;
+		["inputs"] = {
+		};
+	};
+	["instanceKey"] = "1a432f36";
+}
+return obj1

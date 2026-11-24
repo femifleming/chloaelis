@@ -1,0 +1,23 @@
+# A chain preset saved with Chloaelis 1.1.0 (saves/chloaelis-1.1.0.chain: all eight units, Tape
+# Loop's wear and time, Scale String's damping and sustain, PT2399's time changed) loads into
+# this version the way the firmware loads a chain preset: a saved unit names its library and
+# module, not its C++ classes. Then a stock Delay, which must still build after it.
+!packages core
+!packages chloaelis
+
+frames 20
+lua (function() local M=require('Package.Manager') for id,p in pairs(M.getPackages()) do if not p.installed then M.install(p) end end return 'ok' end)()
+frames 10
+lua (function() local P=require('Persist.ChainPreset')() if not P:read('@TESTS@/saves/chloaelis-1.1.0.chain') then return 'noread' end local c=require('Channels').getChain(1) c:stop() c:deserialize(P.data) c:start() return 'read '..c:length() end)()
+!expect ^ok read 8$
+frames 60
+lua (function() local c=require('Channels').getChain(1) local out={} for i=1,c:length() do local u=c:getUnit(i) out[#out+1]=u.loadInfo.libraryName..'/'..u.loadInfo.moduleName..':'..tostring(u.objects.op1 ~= nil or u.op ~= nil) end return table.concat(out,' ') end)()
+!expect ^ok chloaelis/PT2399:true chloaelis/BBD:true chloaelis/TapeLoop:true chloaelis/Tube:true chloaelis/Filter:true chloaelis/Lorenz:true chloaelis/Flock:true chloaelis/String:true$
+lua (function() local c=require('Channels').getChain(1) local out={} for i=1,c:length() do local u=c:getUnit(i) local m=u.loadInfo.moduleName if m=='TapeLoop' then out[#out+1]=string.format('tape age %.2f time %.2f', u.op:getParameter('Run Age'):target(), u.objects.time:getParameter('Bias'):target()) elseif m=='String' then out[#out+1]=string.format('string damping %d sustain %.2f', u.op:getOptionValue('Damping'), u.objects.sustain:getParameter('Bias'):target()) elseif m=='PT2399' then out[#out+1]=string.format('pt2399 time %.2f', u.objects.time:getParameter('Bias'):target()) end end return table.concat(out,'; ') end)()
+!expect ^ok pt2399 time 0\.25; tape age 0\.5\d time 0\.75; string damping 3 sustain 1\.05$
+frames 300
+lua (function() local F=require('Unit.Factory') local c=require('Channels').getChain(1) local ok='notfound' for _,u in ipairs(F.getUnitsByLibrary('core')) do if u.title=='Delay' then local s,e=pcall(function() c:loadUnit(u) end) ok = s and 'loaded' or ('ERR '..tostring(e)) end end return ok end)()
+!expect ^ok loaded$
+frames 60
+cap @SHOTS@/oldsave.png
+quit

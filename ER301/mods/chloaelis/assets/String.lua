@@ -1,14 +1,19 @@
 local app = app
-local lib = require "chloaelis.libchloaelis"
+-- Modules are required relative to this file, so the same files work in the Chloaelis package
+-- ("chloaelis.X") and inside sürialeuis 2 ("surialeuis.chloaelis.X", with sürialeuis's library).
+local here = (...):match("^(.*)%.")
+local pkg = here:match("^[^.]+")
+local lib = require(pkg .. ".lib" .. pkg)
+lib = lib.chloaelis or lib.suri_chloaelis or lib -- the classes sit in their C++ namespace (SWIG nspace)
 local libcore = require "core.libcore"
 local Class = require "Base.Class"
 local Unit = require "Unit"
 local Pitch = require "Unit.ViewControl.Pitch"
 local OptionControl = require "Unit.ViewControl.OptionControl"
 local Encoder = require "Encoder"
-local CellView = require "chloaelis.CellView"
-local ScaleControl = require "chloaelis.ScaleControl"
-local Kit = require "chloaelis.Kit"
+local CellView = require(here .. ".CellView")
+local ScaleControl = require(here .. ".ScaleControl")
+local Kit = require(here .. ".Kit")
 local ply = app.SECTION_PLY
 
 local sustainMap = Kit.map(0, 1.15, 0.1, 0.01, 0.001, 0.0001)
