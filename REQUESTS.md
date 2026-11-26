@@ -238,3 +238,9 @@ Every request typed while this was being designed and built with Claude Code, in
 > fix those bugs here and on the github for chloalis standlone release as well.
 
 > (2026-11-24) bug found while merging sürialeuis 2.0: Tape Loop could lose its saved wear if a patch loaded mid-block; fixed in 1.1.2 under "fix those bugs here and on the github for chloalis standlone release as well."
+
+## 2026-11-26 — the old project name removed
+
+> remove the old project name from everything on this computer and on github, it was an old name for something, i dont want it to show up next to plugins or anywhere on here or github, everything has its own name now, remove that title from things.
+
+(Each plug-in now lists under its own maker name in hosts; bundle IDs, LV2 URIs, preset/last-patch folders, docs and code follow. The hidden 4-letter manufacturer code is unchanged, so saved sessions still open.)

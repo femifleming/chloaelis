@@ -1309,7 +1309,7 @@ namespace
             addAndMakeVisible (title); title.setBounds (0, 0, 460, 120);
             title.name = "chloaelis";
             title.sub = String::fromUTF8 ("dual filter \xc2\xb7 tube \xc2\xb7 delay, with a weather of its own");
-            title.code = String::fromUTF8 ("chl " CHL_VERSION " \xc2\xb7 freakiepie");
+            title.code = String::fromUTF8 ("chl " CHL_VERSION);
 
             Node* cutNode[2] {};
             Node* inNode[2] {};

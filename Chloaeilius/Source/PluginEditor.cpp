@@ -1690,7 +1690,7 @@ namespace
             addAndMakeVisible (title); title.setBounds (0, 0, 460, 120);
             title.name = "chloaeilius"; title.namePx = 22.0f;
             title.sub = "the same, folded into a sphere: ambisonics twin";
-            title.code = String::fromUTF8 ("chs " CHL_VERSION " \xc2\xb7 freakiepie");
+            title.code = String::fromUTF8 ("chs " CHL_VERSION);
 
             Node* cutNode[2] {};
             Node* inNode[2] {};
